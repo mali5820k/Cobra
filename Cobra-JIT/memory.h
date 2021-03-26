@@ -1,5 +1,5 @@
-#ifndef cbr_memory_h
-#define cbr_memory_h
+#ifndef kc_memory_h
+#define kc_memory_h
 
 #include "common.h"
 

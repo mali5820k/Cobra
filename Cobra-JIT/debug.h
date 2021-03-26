@@ -1,5 +1,5 @@
-#ifndef cbr_debug_h
-#define cbr_debug_h
+#ifndef kc_debug_h
+#define kc_debug_h
 
 #include "chunk.h"
 

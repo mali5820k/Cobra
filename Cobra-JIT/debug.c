@@ -9,6 +9,11 @@ void disassembleChunk(Chunk* chunk, const char* name) {
     }
 }
 
+static int simpleInstruction(const char* name, int offset) {
+    printf("%s\n", name);
+    return offset + 1;
+}
+
 // Reads the instruction in each bit-field range 
 // which is referred to as the "offset" and gets the components
 // of that instruction. For example, the opcode portion of the instruction
@@ -24,9 +29,4 @@ int disassembleInstruction(Chunk* chunk, int offset) {
             return offset + 1;
     }
 
-}
-
-static int simpleInstruction(const char* name, int offset) {
-    printf("%s\n", name);
-    return offset + 1;
 }

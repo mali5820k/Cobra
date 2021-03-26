@@ -1,16 +1,1 @@
-#CBR make file
-
-CC       = gcc
-CFLAGS   = -lm -g -Wall
-OBJFILES = chunk.c, memory.c, debug.c, main.c
-LDFLAGS  = 
-TARGET   = InstructionsTester
-
-
-all: $(TARGET)
-
-$(TARGET): $(OBJFILES)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJFILES) $(LDFLAGS)
-
-clean:
-	rm -f $(OBJFILES) $(TARGET) *~
+#KC
