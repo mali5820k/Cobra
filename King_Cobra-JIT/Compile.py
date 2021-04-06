@@ -14,10 +14,24 @@ tags = ""
 
 canClear = False
 
+# Future, make a class for each make object and then proceed with individual make files for larger projects.
+# Possibly start off with a template make class and then inherit any subsequent make classes from that class.
+#class Make():
+#    name = "Make Parent"
+#
+#    __init__:
+#        print("{} \n".format(name))
+    
+#class Make2(Make):
+    
+#    __init__:
+#        super.__init__
+
 def main():
 
     # Clear all object files:
     try:
+        canClear = False
         while(True):
             os.system("cd ~/Desktop/Cobra-Programming-Language/Cobra-JIT/")
             cFiles = []
@@ -29,15 +43,9 @@ def main():
                         cFiles.append(file)
                     if file.endswith(".o"):
                         objectFiles.append(file)
-                #print("\n")
-                #print(cFiles)
-                #print("\n")
-                #print(objectFiles)
 
                 cfilesString = ' '.join(cFiles)
-                #print(cfilesString + "\n")
                 objectFilesString = ' '.join(objectFiles)
-                #print(objectFilesString + "\n")
                 os.system("gcc {} {} {} -o {}".format(cfilesString, objectFilesString, tags, outputFileName))
                 canClear = True
 
@@ -47,7 +55,7 @@ def main():
                         objectFiles.append(file)
             
                 objectFilesString = ' '.join(objectFiles)
-                os.system("rm -rf {} ".format(objectFiles))
+                os.system("rm {} ".format(objectFiles))
                 os.system("rm {}".format(outputFileName))
     except (KeyboardInterrupt):
         print("\nEnding Make File Program\n")
