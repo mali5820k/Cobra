@@ -5,5 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define DUBG_TRACE_EXECUTION
+
 #endif
 
