@@ -10,7 +10,7 @@ ignoreFiles = ["CobraCompiler.c"]
 cFilesString = ""
 objectFilesString = ""
 outputFileName = "test"
-tags = ""
+tags = "-Wall"
 
 canClear = False
 
@@ -33,7 +33,8 @@ def main():
     try:
         canClear = False
         while(True):
-            os.system("cd ~/Desktop/Cobra-Programming-Language/Cobra-JIT/")
+            currentFilePath = os.curdir
+            os.system("cd {}".format(currentFilePath))
             cFiles = []
             objectFiles = []
             userInput = input("\nmake or clear\n")

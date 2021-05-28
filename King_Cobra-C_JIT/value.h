@@ -1,5 +1,5 @@
 #ifndef kc_value_h
-#define kc_value_h_h
+#define kc_value_h
 
 #include "common.h"
 

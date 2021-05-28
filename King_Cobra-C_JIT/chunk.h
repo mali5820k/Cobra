@@ -7,6 +7,7 @@
 // OpCode is the one-byte operation code
 typedef enum {
     OP_CONSTANT,
+    OP_NEGATE,
     OP_RETURN,
 } OpCode;
 
