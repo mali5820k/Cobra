@@ -34,7 +34,7 @@ def main():
         canClear = False
         while(True):
             currentFilePath = os.curdir
-            os.system("cd {}".format(currentFilePath))
+            os.system("cd {}".format(currentFilePath)) # For linux
             cFiles = []
             objectFiles = []
             userInput = input("\nmake or clear\n")
