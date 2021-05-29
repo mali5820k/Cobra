@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "common.h"
+#include "compiler.h"
 #include "debug.h"
 #include "vm.h"
 
@@ -77,8 +78,8 @@ Value pop() {
     return *vm.stackTop;
 }
 
-InterpretResult interpret(Chunk* chunk) {
-    vm.chunk = chunk;
-    vm.ip = vm.chunk -> code;
-    return run();
+// This took in a Chunk before, now it'll take in a string of source code
+InterpretResult interpret(const char* source) {
+    copmile(source);
+    return INTERPRET_OK;
 }
