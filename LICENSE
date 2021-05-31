@@ -1,4 +1,7 @@
-From the author of "Crafting Interpreters", Bob Nystrom, the repository files are listed under two licenses, of which the code used in this repository under mali5820k, consists of the files Nystrom lists under the MIT license for .c, .h, .dart, .java, and .lox files. The copy of the MIT license he used will be listed here to meet the MIT license requirements, as well as the Creative Commons license he used for further clarification of the files he included under that license. Files Nystrom listed under the Creative Commons license under his repository were NOT used at all. Bob Nystrom's repository can be found here: https://github.com/munificent/craftinginterpreters.git
+From the author of "Crafting Interpreters", Bob Nystrom, the repository files are listed under two licenses, of which the code used in this repository under mali5820k, consists
+of the files Nystrom lists under the MIT license for .c, .h, .dart, .java, and .lox files. The copy of the MIT license he used will be listed here to meet the MIT license
+requirements, as well as the Creative Commons license he used for further clarification of the files he included under that license. Files Nystrom listed under the Creative
+Commons license under his repository were NOT used at all. Bob Nystrom's repository can be found here: https://github.com/munificent/craftinginterpreters.git
 
 
 
