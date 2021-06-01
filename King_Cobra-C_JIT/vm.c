@@ -80,6 +80,6 @@ Value pop() {
 
 // This took in a Chunk before, now it'll take in a string of source code
 InterpretResult interpret(const char* source) {
-    copmile(source);
+    compile(source);
     return INTERPRET_OK;
 }

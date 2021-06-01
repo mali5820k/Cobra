@@ -1,9 +1,13 @@
 # This is the most elementary makefile I could make for this purpose
-test: chunk.o debug.o main.o memory.o value.o vm.o main.o
-	gcc chunk.o debug.o main.o memory.o value.o -o test
+
+test: chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o
+	gcc chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o -o test
 
 chunk.o: chunk.c chunk.h
 	gcc -c chunk.c -Wall
+
+compiler.o: compiler.c compiler.h
+	gcc -c compiler.c -Wall
 
 debug.o: debug.c debug.h
 	gcc -c debug.c -Wall
@@ -13,6 +17,9 @@ main.o: main.c
 
 memory.o: memory.c memory.h
 	gcc -c memory.c -Wall
+
+scanner.o: scanner.c scanner.h
+	gcc -c scanner.c -Wall
 
 value.o: value.c value.h
 	gcc -c value.c -Wall

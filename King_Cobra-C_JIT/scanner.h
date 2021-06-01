@@ -9,7 +9,7 @@ typedef enum {
     TOKEN_SEMICOLON, TOKEN_SLASH, TOKEN_STAR,
 
     // one to two character tokens like !=
-    TOKEN_BANG, TOKEN_BANG_EQUAL, // Don't know what these are for => maybe?
+    TOKEN_BANG, TOKEN_BANG_EQUAL, // This is for ! or != equivalently
     TOKEN_EQUAL, TOKEN_EQUAL_EQUAL,
     TOKEN_GREATER, TOKEN_GREATER_EQUAL,
     TOKEN_LESS, TOKEN_LESS_EQUAL,
