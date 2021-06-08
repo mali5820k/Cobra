@@ -2,6 +2,9 @@
 #include "chunk.h"
 #include "memory.h"
 
+// This is basically a take on constructing bytecode
+// Similar to how JVM languages compile downto bytecode or
+// an intermediate representation.
 void initChunk(Chunk* chunk) {
     chunk -> count = 0;
     chunk -> capacity = 0;

@@ -3,6 +3,10 @@
 
 #include "common.h"
 
+// These are memory allocation helper macros and function(s)
+// This handles the specific details for safely growing, freeing
+// and reallocating array data-structures.
+
 // Calculates a new capacity given current capacity.
 #define GROW_CAPACITY(capacity) \
     ((capacity) < 16 ? 16 : (capacity) * 2)

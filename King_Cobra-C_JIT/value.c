@@ -2,6 +2,8 @@
 #include "memory.h"
 #include "value.h"
 
+// Function implementations for manipulating ValueArrays
+
 void initValueArray(ValueArray* array) {
     array -> values = NULL;
     array -> capacity = 0;

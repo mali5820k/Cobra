@@ -33,7 +33,7 @@ static char peek() {
 }
 
 static bool match(char expected) {
-    if(istAtEnd()) return false;
+    if(isAtEnd()) return false;
     if(*scanner.current != expected) return false;
     scanner.current++;
     return true;
