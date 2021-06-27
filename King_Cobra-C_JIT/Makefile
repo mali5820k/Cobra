@@ -1,7 +1,7 @@
 # This is the most elementary makefile I could make for this purpose
 
 test: chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o
-	clang-11 chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o -o test
+	clang-11 chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o -o3 test
 
 chunk.o: chunk.c chunk.h
 	clang-11 -c chunk.c -Wall
