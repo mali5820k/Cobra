@@ -7,10 +7,11 @@ cFiles = []
 objectFiles = []
 ignoreFiles = ["CobraCompiler.c"]
 
+compiler = "clang"
 cFilesString = ""
 objectFilesString = ""
 outputFileName = "test"
-tags = "-Wall"
+tags = "-Wall -O3"
 
 canClear = False
 
@@ -47,7 +48,8 @@ def main():
 
                 cfilesString = ' '.join(cFiles)
                 objectFilesString = ' '.join(objectFiles)
-                os.system("gcc {} {} {} -o {}".format(cfilesString, objectFilesString, tags, outputFileName))
+                print("{} {} {} -o {} {}".format(compiler, cfilesString, objectFilesString, outputFileName, tags))
+                os.system("{} {} {} -o {} {}".format(compiler, cfilesString, objectFilesString, outputFileName, tags))
                 canClear = True
 
             elif(userInput == "clear" and canClear):

@@ -5,7 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#define DUBG_TRACE_EXECUTION
+#define DEBUG_PRINT_CODE
+#define DUBUG_TRACE_EXECUTION
 
 #endif
 

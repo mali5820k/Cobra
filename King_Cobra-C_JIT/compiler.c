@@ -4,6 +4,10 @@
 #include "compiler.h"
 #include "scanner.h"
 
+#ifdef DEBUG_PRINT_CODE
+#include "debug.h"
+#endif
+
 typedef struct {
     Token current;
     Token previous;
@@ -129,6 +133,13 @@ static void emitConstant(Value value) {
 // Ends the compiling process
 static void endCompiler() {
     emitReturn();
+    
+    // This is only for printing out chunks
+    #ifdef DEBUG_PRINT_CODE
+    if(!parser.hadError) {
+        disassembleChunk(currentChunk(), "code");
+    }
+    #endif
 }
 
 // Function prototypes for these select methods
