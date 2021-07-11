@@ -5,7 +5,7 @@
 
 typedef enum {
     VAL_BOOL,
-    VAL_NOT,
+    VAL_NULL,
     VAL_NUMBER,
 }   ValueType;
 
@@ -33,7 +33,7 @@ typedef struct {
 // static allocation means for what appears to be a dynamic allocation
 // to the user
 #define BOOL_VAL(value)     ((Value){VAL_BOOL, {.boolean = value}})
-#define NUL_VAL             ((Value){VAL_NULL, {.number = 0}})
+#define NULL_VAL            ((Value){VAL_NULL, {.number = 0}})
 #define NUMBER_VAL(value)   ((Value){VAL_NUMBER, {.number = value}})
 
 typedef struct {
