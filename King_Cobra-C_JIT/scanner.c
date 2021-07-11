@@ -85,7 +85,7 @@ static void skipWhitespace() {
                 break;
             case '/': // Comments are going to be preceded by //
                 if (peekNext() == '/') {
-                    while (peak() != '\n' && !isAtEnd()) advance();
+                    while (peek() != '\n' && !isAtEnd()) advance();
                 } 
                 else {
                     return;

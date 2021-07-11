@@ -3,32 +3,23 @@
 # this current directory
 import os
 
-cFiles = []
-objectFiles = []
-ignoreFiles = ["CobraCompiler.c"]
-
-compiler = "clang"
-cFilesString = ""
-objectFilesString = ""
-outputFileName = "test"
-tags = "-Wall -O3"
-
-canClear = False
-
-# Future, make a class for each make object and then proceed with individual make files for larger projects.
-# Possibly start off with a template make class and then inherit any subsequent make classes from that class.
-#class Make():
-#    name = "Make Parent"
-#
-#    __init__:
-#        print("{} \n".format(name))
-    
-#class Make2(Make):
-    
-#    __init__:
-#        super.__init__
-
 def main():
+    cFiles = []
+    objectFiles = []
+    ignoreFiles = []
+
+
+    cFilesString = ""
+    objectFilesString = ""
+    outputFileName = "test"
+    tags = "-Wall -o2"
+    compiler = "clang-12"
+    canClear = False
+
+
+    print("This program assumes that you have clang-12 installed on your pc, if not, please install that first\n")
+    print("If you're using a different version of clang, please type in the compiler name to change it\n")
+    print("\nYour current compiler's name is: {}\n".format(compiler))
 
     # Clear all object files:
     try:
@@ -38,7 +29,7 @@ def main():
             os.system("cd {}".format(currentFilePath)) # For linux
             cFiles = []
             objectFiles = []
-            userInput = input("\nmake or clear\n")
+            userInput = input("\nEnter a custom compiler name (if you have one)\n or type:\nmake or clear\n")
             if(userInput == "make"):
                 for file in os.listdir('.'):
                     if file.endswith(".c") and file not in ignoreFiles:
@@ -48,8 +39,8 @@ def main():
 
                 cfilesString = ' '.join(cFiles)
                 objectFilesString = ' '.join(objectFiles)
-                print("{} {} {} -o {} {}".format(compiler, cfilesString, objectFilesString, outputFileName, tags))
-                os.system("{} {} {} -o {} {}".format(compiler, cfilesString, objectFilesString, outputFileName, tags))
+                print("{} {} {} {} -o {}".format(compiler, cfilesString, objectFilesString, tags, outputFileName))
+                os.system("{} {} {} {} -o {}".format(compiler, cfilesString, objectFilesString, tags, outputFileName))
                 canClear = True
 
             elif(userInput == "clear" and canClear):
@@ -60,6 +51,9 @@ def main():
                 objectFilesString = ' '.join(objectFiles)
                 os.system("rm {} ".format(objectFiles))
                 os.system("rm {}".format(outputFileName))
+            else:
+                compiler = userInput
+                print("\nCompiler is now set to: {}\n".format(userInput))
     except (KeyboardInterrupt):
         print("\nEnding Make File Program\n")
         exit(1)

@@ -5,6 +5,21 @@
 #include "debug.h"
 #include "vm.h"
 
+// Function prototypes:
+static void resetStack();
+static void runtimeError(const char* format, ...);
+static bool isFalsey(Value value);
+static InterpretResult run();
+static Value peek(int distance);
+
+void initVM();
+void freeVM();
+void push(Value value);
+
+Value pop();
+InterpretResult interpret(const char* source);
+
+
 VM vm;
 
 static void resetStack() {
@@ -37,9 +52,9 @@ static InterpretResult run() {
     #define READ_BYTE() (*vm.ip++)
     #define READ_CONSTANT() (vm.chunk -> constants.values[READ_BYTE()])
     // A macro this large isn't good C practice, but I'm going with it
+    // This checks that both operands are numbers, otherwise, we throw a runtime error
     #define BINARY_OP(valueType, op) \
-        do { \
-            // This checks that both operands are numbers, otherwise, we throw a runtime error 
+        do { \ 
             if(!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) { \
                 runtimeError("Operands must be numbers."); \
                 return INTERPRET_RUNTIME_ERROR; \
@@ -120,7 +135,6 @@ Value pop() {
     return *vm.stackTop;
 }
 
-// Returns a value from the stack without popping it
 static Value peek(int distance) {
     return vm.stackTop[-1 - distance];
 }
