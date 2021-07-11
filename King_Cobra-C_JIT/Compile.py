@@ -11,9 +11,9 @@ def main():
 
     cFilesString = ""
     objectFilesString = ""
-    outputFileName = "test"
+    outputFileName = "test.exe"
     tags = "-Wall -o2"
-    compiler = "clang-12"
+    compiler = "clang"
     canClear = False
 
 
