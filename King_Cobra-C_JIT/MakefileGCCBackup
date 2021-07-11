@@ -1,7 +1,7 @@
 # This is the most elementary makefile I could make for this purpose
 
-test: chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o
-	gcc chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o -o test
+test: chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o object.o
+	gcc chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o -o3 test
 
 chunk.o: chunk.c chunk.h
 	gcc -c chunk.c -Wall
@@ -26,6 +26,9 @@ value.o: value.c value.h
 
 vm.o: vm.c vm.h
 	gcc -c vm.c -Wall
+
+object.o: object.c object.h
+	gcc -c object.c -Wall
 
 clean:
 	rm *.o test

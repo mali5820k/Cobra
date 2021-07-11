@@ -1,6 +1,6 @@
 # This is the most elementary makefile I could make for this purpose
 
-test: chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o
+test: chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o object.o
 	clang-12 chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o -o3 test
 
 chunk.o: chunk.c chunk.h
@@ -26,6 +26,9 @@ value.o: value.c value.h
 
 vm.o: vm.c vm.h
 	clang-12 -c vm.c -Wall
+
+object.o: object.c object.h
+	clang-12 -c object.c -Wall
 
 clean:
 	rm *.o test

@@ -37,7 +37,7 @@ static InterpretResult run() {
     #define READ_BYTE() (*vm.ip++)
     #define READ_CONSTANT() (vm.chunk -> constants.values[READ_BYTE()])
     // A macro this large isn't good C practice, but I'm going with it
-    #define BINARY_OP(op) \
+    #define BINARY_OP(valueType, op) \
         do { \
             // This checks that both operands are numbers, otherwise, we throw a runtime error 
             if(!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) { \
@@ -128,7 +128,7 @@ static Value peek(int distance) {
 // Falsiness is the way other types are handled for negation, so the
 // method that wraps this logic is called isFalsey
 static bool isFalsey(Value value) {
-    return IS_NULL(value) || (IS_BOOL(VALUE) && !AS_BOOL(value));
+    return IS_NULL(value) || (IS_BOOL(value) && !AS_BOOL(value));
 }
 
 // This took in a Chunk before, now it'll take in a string of source code
