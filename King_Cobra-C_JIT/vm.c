@@ -69,15 +69,22 @@ static InterpretResult run() {
                 push(constant);
                 break;
             }
-            case OP_NULL: push(NULL_VAL); break;
-            case OP_TRUE: push(BOOL_VAL(true)); break;
-            case OP_FALSE: push(BOOL_VAL(false)); break;
-
-            case OP_ADD: BINARY_OP(NUMBER_VAL, +); break;
-            case OP_SUBTRACT: BINARY_OP(NUMBER_VAL, -); break;
-            case OP_MULTIPLY: BINARY_OP(NUMBER_VAL, *); break;
-            case OP_DIVIDE: BINARY_OP(NUMBER_VAL, /); break;
-
+            case OP_NULL:       push(NULL_VAL); break;
+            case OP_TRUE:       push(BOOL_VAL(true)); break;
+            case OP_FALSE:      push(BOOL_VAL(false)); break;
+            case OP_EQUAL: {
+                Value b = pop();
+                Value a = pop();
+                push(BOOL_VAL(valuesEqual(a, b)));
+                break;
+            }
+            case OP_GREATER:    BINARY_OP(BOOL_VAL, >); break;
+            case OP_LESS:       BINARY_OP(BOOL_VAL, <); break;
+            case OP_ADD:        BINARY_OP(NUMBER_VAL, +); break;
+            case OP_SUBTRACT:   BINARY_OP(NUMBER_VAL, -); break;
+            case OP_MULTIPLY:   BINARY_OP(NUMBER_VAL, *); break;
+            case OP_DIVIDE:     BINARY_OP(NUMBER_VAL, /); break;
+            case OP_NOT:        push(BOOL_VAL(isFalsey(pop()))); break;
             case OP_NEGATE: {
                 // Read the value on top of the stack and check to see if it is a number,
                 // since if it isn't we throw a runtime error
@@ -116,6 +123,12 @@ Value pop() {
 // Returns a value from the stack without popping it
 static Value peek(int distance) {
     return vm.stackTop[-1 - distance];
+}
+
+// Falsiness is the way other types are handled for negation, so the
+// method that wraps this logic is called isFalsey
+static bool isFalsey(Value value) {
+    return IS_NULL(value) || (IS_BOOL(VALUE) && !AS_BOOL(value));
 }
 
 // This took in a Chunk before, now it'll take in a string of source code

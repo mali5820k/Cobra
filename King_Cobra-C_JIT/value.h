@@ -42,10 +42,11 @@ typedef struct {
     Value* values;
 } ValueArray;
 
-void initValueArray(ValueArray* array);
-void writeValueArray(ValueArray* array, Value value);
-void freeValueArray(ValueArray* array);
-void printValue(Value value);
+bool valuesEqual(Value a, Value b); // Returns a C-bool for whether or not two values are equal.
+void initValueArray(ValueArray* array); // Initializes a value array.
+void writeValueArray(ValueArray* array, Value value); // Writes a value to the specified value array.
+void freeValueArray(ValueArray* array); // Frees the specified value array from memory
+void printValue(Value value); // Prints out the specified value.
 
 
 #endif
