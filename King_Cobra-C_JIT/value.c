@@ -30,9 +30,10 @@ void freeValueArray(ValueArray* array) {
 }
 
 /**
- * Prints out particular types.
+ * Prints out values with respect to each variable and object type.
 */
 void printValue(Value value) {
+    printf("Result: ");
     switch(value.type) {
         case VAL_BOOL:
             printf(AS_BOOL(value) ? "true" : "false");
@@ -42,7 +43,7 @@ void printValue(Value value) {
         case VAL_OBJ: printObject(value); break;
     }
 
-    printf("%g", AS_NUMBER(value));
+    //printf("%g ", AS_NUMBER(value)); // This was the original line that caused duplicate prints
 }
 
 /**

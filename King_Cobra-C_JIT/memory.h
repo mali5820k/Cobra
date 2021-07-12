@@ -3,22 +3,29 @@
 
 #include "common.h"
 
-// These are memory allocation helper macros and function(s)
 
+/**
+ * A Utility macro for reallocating memory for various objects.
+*/
 #define ALLOCATE(type, count) \
     (type*)reallocate(NULL, 0, sizeof(type) * (count))
 
-
-// This handles the specific details for safely growing, freeing
-// and reallocating array data-structures.
-// Calculates a new capacity given current capacity.
+/**
+ * Calculates a new capacity given current capacity.
+*/
 #define GROW_CAPACITY(capacity) \
     ((capacity) < 16 ? 16 : (capacity) * 2)
 
+/**
+ * Resizes an array dynamically from current length to new length.
+*/
 #define GROW_ARRAY(type, pointer, oldCount, newCount) \
     (type*)reallocate(pointer, sizeof(type) * (oldCount), \
         sizeof(type) * (newCount))
 
+/**
+ * Frees the memory on the heap that an array occupies.
+*/
 #define FREE_ARRAY(type, pointer, oldCount) \
     reallocate(pointer, sizeof(type) * (oldCount), 0)
 

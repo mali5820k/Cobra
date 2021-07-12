@@ -5,7 +5,9 @@
 #include "debug.h"
 #include "vm.h"
 
-// Function prototypes:
+/**
+ * Function prototypes:
+*/
 static void resetStack();
 static void runtimeError(const char* format, ...);
 static bool isFalsey(Value value);
@@ -20,12 +22,23 @@ Value pop();
 InterpretResult interpret(const char* source);
 
 
+/**
+ * Virtual Machine reference:
+*/
 VM vm;
 
+/**
+ * Reset the stack by setting the stack pointer to the start of the array.
+ * In other words, the bottom of the stack.
+*/
 static void resetStack() {
     vm.stackTop = vm.stack;
 }
 
+/**
+ * Printing out runtime errors with corresponding line
+ * and any other useful information.
+*/
 static void runtimeError(const char* format, ...) {
     va_list args;
     va_start(args, format);
