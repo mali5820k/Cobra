@@ -4,26 +4,34 @@
 #include "memory.h"
 #include "value.h"
 
-// Function implementations for manipulating ValueArrays
-
+/**
+ * Initializes an empty value array with no memory allocation.
+*/
 void initValueArray(ValueArray* array) {
     array -> values = NULL;
     array -> capacity = 0;
     array -> count = 0;
 }
 
+/**
+ * Writes the specified value to the provided value array,
+ * and increases the size of the array with increased memory allocation
+ * when necessary.
+*/
 void writeValueArray(ValueArray* array, Value value) {
     if(array -> capacity < array -> count + 1) {
         int oldCapacity = array -> capacity;
         array -> capacity = GROW_CAPACITY(oldCapacity);
         array -> values = GROW_ARRAY(Value, array -> values, oldCapacity, array -> capacity);
-
     }
 
     array -> values[array -> count] = value;
     array -> count++;
 }
 
+/**
+ * Safely frees the memory allocated for the provided value array.
+*/
 void freeValueArray(ValueArray* array) {
     FREE_ARRAY(Value, array -> values, array -> capacity);
     initValueArray(array);
@@ -47,7 +55,7 @@ void printValue(Value value) {
 }
 
 /**
- * Handles the equivalent operation for various types.
+ * Returns a C-bool for whether or not two values are equal.
 */
 bool valuesEqual(Value a, Value b) {
     if(a.type != b.type) return false;

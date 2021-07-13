@@ -4,7 +4,9 @@
 #include "common.h"
 #include "value.h"
 
-// OpCode is the one-byte operation code
+/**
+ * All opcodes account for one byte in the two bytes of an instruction.
+*/
 typedef enum {
     OP_CONSTANT,
     OP_NULL,
@@ -25,7 +27,11 @@ typedef enum {
     OP_RETURN,
 } OpCode;
 
-// A dynamic array of instructions
+/**
+ * Chunks store instructions within a dynamic array.
+ * Each Chunk is responsible for associated instructions, lines from source code that the instructions
+ * are read from, and an array of values.
+*/
 typedef struct {
     int count;
     int capacity;
@@ -34,9 +40,29 @@ typedef struct {
     ValueArray constants;
 } Chunk;
 
+/**
+ * Initializes an empty Chunk with no memory allocation.
+ * This is basically a take on constructing bytecode
+ * Similar to how JVM languages compile down to bytecode or
+ * an intermediate representation.
+*/
 void initChunk(Chunk* chunk);
+
+/**
+ * Frees the memory allocated for a Chunk on the heap and 
+ * leaves the Chunk as it was first initialized without any
+ * memory allocated for it on the heap.
+*/
 void freeChunk(Chunk* chunk);
+
+/**
+ * Writes the provided byte and the line number as well to the specified Chunk.
+*/
 void writeChunk(Chunk* chunk, uint8_t byte, int line);
+
+/**
+ * Adds the provided constant instruction to the specified Chunk.
+*/
 int addConstant(Chunk* chunk, Value value);
 
 #endif

@@ -3,10 +3,15 @@
 
 #include "common.h"
 
-// Forward declaration of the Obj struct, the definition is included in the object.h
+/** 
+ * Forward declarations of the Obj and ObjString structs; the definitions are included in the object.h file.
+*/
 typedef struct Obj Obj;
 typedef struct ObjString ObjString;
 
+/**
+ * Value types that will be used in the language are listed here.
+*/
 typedef enum {
     VAL_BOOL,
     VAL_NULL,
@@ -14,6 +19,9 @@ typedef enum {
     VAL_OBJ
 }   ValueType;
 
+/**
+ * Values contain information for a type to be stored in chunks.
+*/
 typedef struct {
     ValueType type;
     union {
@@ -65,11 +73,31 @@ typedef struct {
     Value* values;
 } ValueArray;
 
-bool valuesEqual(Value a, Value b); // Returns a C-bool for whether or not two values are equal.
-void initValueArray(ValueArray* array); // Initializes a value array.
-void writeValueArray(ValueArray* array, Value value); // Writes a value to the specified value array.
-void freeValueArray(ValueArray* array); // Frees the specified value array from memory
-void printValue(Value value); // Prints out the specified value.
+/**
+ * Returns a C-bool for whether or not two values are equal.
+*/
+bool valuesEqual(Value a, Value b);
 
+/**
+ * Initializes an empty value array with no memory allocation.
+*/
+void initValueArray(ValueArray* array);
+
+/**
+ * Writes the specified value to the provided value array,
+ * and increases the size of the array with increased memory allocation
+ * when necessary.
+*/
+void writeValueArray(ValueArray* array, Value value);
+
+/**
+ * Safely frees the memory allocated for the provided value array.
+*/
+void freeValueArray(ValueArray* array);
+
+/**
+ * Prints out values with respect to each variable and object type.
+*/
+void printValue(Value value);
 
 #endif

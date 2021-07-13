@@ -35,7 +35,15 @@
 #define FREE_ARRAY(type, pointer, oldCount) \
     reallocate(pointer, sizeof(type) * (oldCount), 0)
 
+/** 
+ * Reallocates an array to a specific memory location
+ * with the new size of the array taken into account.
+*/
 void* reallocate(void* pointer, size_t oldSize, size_t newSize);
+
+/**
+ * Parsing through a linked list and freeing all object nodes.
+*/
 void freeObjects();
 
 #endif

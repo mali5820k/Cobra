@@ -1,3 +1,6 @@
+# This is a utility script for compiling the KC programming language interpretor on 
+# the Windows 10 OS 64-bit. 
+# 32-bit systems have not been tested.
 
 # This file is meant to compile everything in
 # this current directory
@@ -8,17 +11,15 @@ def main():
     objectFiles = []
     ignoreFiles = []
 
-
     cFilesString = ""
     objectFilesString = ""
-    outputFileName = "test.exe"
+    outputFileName = "Interpreter_Program.exe"
     tags = "-Wall -o2"
     compiler = "clang"
     canClear = False
 
-
-    print("This program assumes that you have clang-12 installed on your pc, if not, please install that first\n")
-    print("If you're using a different version of clang, please type in the compiler name to change it\n")
+    print("This program assumes that you have clang version 11 installed on your pc.\n")
+    print("If you're having too many complications running this script, please look at pre-built binaries on the releases page on the Github Repo.\n")
     print("\nYour current compiler's name is: {}\n".format(compiler))
 
     # Clear all object files:
@@ -29,7 +30,7 @@ def main():
             os.system("cd {}".format(currentFilePath)) # For linux
             cFiles = []
             objectFiles = []
-            userInput = input("\nEnter a custom compiler name (if you have one)\n or type:\nmake or clear\n")
+            userInput = input("\nEnter a custom compiler name (if you have one)\n   or type in one of the following options:\n    make or clear\n")
             if(userInput == "make"):
                 for file in os.listdir('.'):
                     if file.endswith(".c") and file not in ignoreFiles:

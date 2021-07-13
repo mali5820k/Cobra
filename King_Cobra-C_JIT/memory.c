@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include "memory.h"
 
-// Reallocates an array to a specific memory location
-// with the new size of the array taken into account.
+/** 
+ * Reallocates an array to a specific memory location
+ * with the new size of the array taken into account.
+*/
 void* reallocate(void* pointer, size_t oldSize, size_t newSize) {
     if(newSize == 0) {
         free(pointer);
@@ -15,7 +17,9 @@ void* reallocate(void* pointer, size_t oldSize, size_t newSize) {
     return result;
 }
 
-
+/**
+ * Frees a singular object node from the linked list in memory.
+*/
 static void freeObject(Obj* object) {
     switch(object -> type) {
         case OBJ_STRING: {
@@ -28,7 +32,7 @@ static void freeObject(Obj* object) {
 }
 
 /**
- * Parsing through a linked list and freeing all nodes.
+ * Parsing through a linked list and freeing all object nodes.
 */
 void freeObjects() {
     Obj* object = vm.objects;

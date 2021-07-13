@@ -15,6 +15,9 @@ void initTable(Table* table) {
     table -> entries = NULL;
 }
 
+/**
+ * Frees the memory and all allocated entries in the specified Hash table.
+*/
 void freeTable(Table* table) {
     FREE_ARRAY(Entry, table -> entries, table -> capacity);
     initTable(table);
