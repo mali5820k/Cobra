@@ -4,7 +4,7 @@ The language itself is going to be compiler-based with focus on portability via 
 functional VM, the focus will be to implement KC with LLVM, JVM, or to keep it as a standalone project for experience.
 
 This is an ongoing project that is based off of interest in compiled languages.
-The book I am actively reading to accomplish this project is "Crafting Interpretors" By Bob Nystrom which he has made publicly available at: https://craftinginterpreters.com/
+The book I am actively reading to accomplish this project is "Crafting Interpreters" By Bob Nystrom which he has made publicly available at: https://craftinginterpreters.com/
 
 
 #IMPORTANT NOTES TO GET THE INTERPRETER UP AND RUNNING
@@ -18,4 +18,4 @@ I haven't tested anything with Macs as I don't own one. I do know that Macs have
 For Linux users:
 Since this project is natively coded on Linux, you can simply run the make file for either GCC or Clang. You will need to install Clang first if you go choose to use the Clang make file. The python compile script for Linux will also work as long as you have python 3 and Clang installed. Once the program binary is compiled, you simply need to run the file in a terminal with ./Interpreter_Program .
 
-Keep in mind that this project is being developed solely by me, so bugs are to be expected and with time, the language will take on its own identy that will allow it to be more different than the Lox language implementation described in "Crafting Interpretors" By Bob Nystrom.
+Keep in mind that this project is being developed solely by me, so bugs are to be expected and with time, the language will take on its own identy that will allow it to be more different than the Lox language implementation described in "Crafting Interpreters" By Bob Nystrom.
