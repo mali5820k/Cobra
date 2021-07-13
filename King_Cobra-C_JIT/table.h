@@ -35,5 +35,15 @@ void initTable(Table* table);
 */
 void freeTable(Table* table);
 
+/**
+ * Adds the provided key-value pair to the specified hash table.
+ * Returns true if the entry was successfully added and false otherwise.
+*/
+bool tableSet(Table* table, ObjString* key, Value value);
 
+/**
+ * Copying entries of one hash table into another with respect to a new hash code
+ * for determining positions for entries in the target hash table.
+*/
+void tableAddAll(Table* from, Table* to);
 #endif
