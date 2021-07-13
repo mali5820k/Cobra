@@ -28,4 +28,6 @@ Keep in mind that I'm only one person and although Nystrom's book is guiding me 
 
 Also, a syntax and feature guide will be posted here as well as the releases page with a downloadable PDF later. I have several more features to include before that will be relevant. 
 
+Lastly, it is unclear to me as to how to use the MIT license in terms of the copyright of code. To be safe, I have included the original copyright notice of Bob Nystrom (written as Robert Nystrom in his original license) from his MIT license for MIT licensed code in my MIT license file as well, to ensure all legal bases are covered for the MIT licensed code.
+
 Thank you for checking out my repo!
