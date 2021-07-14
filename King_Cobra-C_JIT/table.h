@@ -36,6 +36,13 @@ void initTable(Table* table);
 void freeTable(Table* table);
 
 /**
+ * Get the value associated with the provided key and sets the value variable
+ * that's passed in to point to that value. Finally, the function returns true
+ * if the value is found, otherwise false.
+*/
+bool tableGet(Table* table, ObjString* key, Value* value);
+
+/**
  * Adds the provided key-value pair to the specified hash table.
  * Returns true if the entry was successfully added and false otherwise.
 */

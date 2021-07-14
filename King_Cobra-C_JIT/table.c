@@ -52,6 +52,21 @@ static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
 }
 
 /**
+ * Get the value associated with the provided key and sets the value variable
+ * that's passed in to point to that value. Finally, the function returns true
+ * if the value is found, otherwise false.
+*/
+bool tableGet(Table* table, ObjString* key, Value* value) {
+    if(table -> count == 0) return false;
+
+    Entry* entry = findEntry(table -> entries, table -> capacity, key);
+    if(entry -> key == NULL) return false;
+
+    *value = entry -> value;
+    return true;
+}
+
+/**
  * Changes the size of the table (generally increasing capacity) 
  * and hashes over all previously hashed objects to new locations
  * for better uniformity and load balancing.
