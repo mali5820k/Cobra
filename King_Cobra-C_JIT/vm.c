@@ -187,8 +187,8 @@ static bool isFalsey(Value value) {
  * Combines two strings together.
 */
 static void concatenate() {
-    ObjString* b = AS_String(pop());
-    ObjString* a = AS_String(pop());
+    ObjString* b = AS_STRING(pop());
+    ObjString* a = AS_STRING(pop());
 
     int length = a -> length + b -> length;
     char* chars = ALLOCATE(char, length + 1);
