@@ -128,6 +128,24 @@ static void consume(TokenType type, const char* message) {
 }
 
 /**
+ * Returns true if the current token has the given type.
+*/
+static bool check(TokenType type) {
+    return parser.current.type == type;
+}
+
+/**
+ * If the provided token is the same as the one we compare it to,
+ * then advance and return true, 
+ * otherwise return false;
+*/
+static bool match(TokenType type) {
+    if(!check(type)) return false;
+    advance();
+    return true;
+}
+
+/**
  * Emits a singular byte to a chunk.
 */
 static void emitByte(uint8_t byte) {
@@ -189,6 +207,8 @@ static void endCompiler() {
  * Function prototypes for these select methods.
 */
 static void expression();
+static void statement();
+static void declaration();
 static ParseRule* getRule(TokenType type);
 static void parsePrecedence(Precedence precedence);
 
@@ -364,6 +384,31 @@ static void expression() {
 }
 
 /**
+ * Evaluates the expression provided and prints it out.
+*/
+static void printStatement() {
+    expression();
+    consume(TOKEN_SEMICOLON, "EXPECT ';' after value.");
+    emitByte(OP_PRINT);
+}
+
+/**
+ * Compiles a single declaration.
+*/
+static void declaration() {
+    statement();
+}
+
+/**
+ * Compiles statements.
+*/
+static void statement() {
+    if(match(TOKEN_PRINT)) {
+        printStatement();
+    }
+}
+
+/**
  * The function that calls and pieces the functions of the compiler together and runs.
  * Think of this as the "main" method of the compiler.
 */
@@ -375,8 +420,11 @@ bool compile(const char* source, Chunk* chunk) {
     parser.panicMode = false;
 
     advance();
-    expression();
-    consume(TOKEN_EOF, "Expect end of expression.");
+    
+    while (!match(TOKEN_EOF)) {
+        declaration();
+    }
+
     endCompiler();
     return !parser.hadError;
 }
