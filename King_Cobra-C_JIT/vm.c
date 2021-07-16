@@ -13,6 +13,7 @@
 */
 static void resetStack();
 static void runtimeError(const char* format, ...);
+static void concatenate();
 static bool isFalsey(Value value);
 static InterpretResult run();
 static Value peek(int distance);
@@ -58,9 +59,11 @@ static void runtimeError(const char* format, ...) {
 void initVM() {
     resetStack();
     vm.objects = NULL;
+    initTable(&vm.strings);
 }
 
 void freeVM() {
+    freeTable(&vm.strings);
     freeObjects();
 }
 

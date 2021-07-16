@@ -49,8 +49,18 @@ bool tableGet(Table* table, ObjString* key, Value* value);
 bool tableSet(Table* table, ObjString* key, Value value);
 
 /**
+ * Delete string object from the table.
+*/
+bool tableDelete(Table* table, ObjString* key);
+
+/**
  * Copying entries of one hash table into another with respect to a new hash code
  * for determining positions for entries in the target hash table.
 */
 void tableAddAll(Table* from, Table* to);
+
+/**
+ * Looks for a string in the given table and checks for equivalence.
+*/
+ObjString* tableFindString(Table* table, const char* chars, int length, uint32_t hash);
 #endif

@@ -38,16 +38,23 @@ void freeTable(Table* table) {
 */
 static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
     uint32_t index = key -> hash % capacity;
+    Entry* tombstone = NULL;
     // Linear probing is handled with the assignment of a new index.
     // The probing will wrap around to the start of the hash table due
     // to the ```(index + 1) % capacity``` calculation.
     for(;;) {
         Entry* entry = &entries[index];
-        if(entry -> key == key || entry -> key == NULL) {
+        if(entry -> key == NULL) {
+            if(IS_NULL(entry -> value)) {
+                return tombstone != NULL ? tombstone : entry;
+            }
+            else {
+                if(tombstone == NULL) tombstone = entry;
+            }
+        }
+        else if(entry -> key == key) {
             return entry;
         }
-
-        index = (index + 1) % capacity;
     }
 }
 
@@ -78,6 +85,7 @@ static void adjustCapacity(Table* table, int capacity) {
         entries[i].value = NULL_VAL;
     }
 
+    table -> count = 0;
     for(int i = 0; i < table -> capacity; i++) {
         Entry* entry = &table -> entries[i];
         if(entry -> key == NULL) continue;
@@ -85,6 +93,7 @@ static void adjustCapacity(Table* table, int capacity) {
         Entry* dest = findEntry(entries, capacity, entry -> key);
         dest -> key = entry -> key;
         dest -> value = entry -> value;
+        table -> count++;
     }
     
     FREE_ARRAY(Entry, table -> entries, table -> capacity);
@@ -106,11 +115,29 @@ bool tableSet(Table* table, ObjString* key, Value value) {
 
     Entry* entry = findEntry(table -> entries, table -> capacity, key);
     bool isNewKey = entry -> key == NULL;
-    if(isNewKey) table -> count++;
+    if(isNewKey && IS_NULL(entry -> value)) table -> count++;
 
     entry -> key = key;
     entry -> value = value;
     return isNewKey;
+}
+
+/**
+ * Delete string object from the table.
+*/
+bool tableDelete(Table* table, ObjString* key) {
+    // If the table is empty, bail
+    if(table -> count == 0) return false;
+
+    // Find the entry associated with the specified key
+    Entry* entry = findEntry(table -> entries, table -> capacity, key);
+    // If there is no entry there or a tombstone, bail
+    if(entry -> key == NULL) return false;
+
+    // Otherwise, we will set at that entries' position a tombstone.
+    entry -> key = NULL;
+    entry -> value = BOOL_VAL(true);
+    return true;
 }
 
 /**
@@ -123,5 +150,22 @@ void tableAddAll(Table* from, Table* to) {
         if(entry -> key != NULL) {
             tableSet(to, entry -> key, entry -> value);
         }
+    }
+}
+
+ObjString* tableFindString(Table* table, const char* chars, int length, uint32_t hash) {
+    if(table -> count == 0) return NULL;
+
+    uint32_t index = hash % table -> capacity;
+
+    for(;;) {
+        Entry* entry = &table -> entries[index];
+        if(entry -> key == NULL) {
+            if(IS_NULL(entry -> value)) return NULL;
+        }
+        else if(entry -> key -> length == length && entry -> key -> hash == hash && memcmp(entry -> key -> chars, chars, length) == 0) {
+            return entry -> key;
+        }
+        index = (index + 1) % table -> capacity;
     }
 }

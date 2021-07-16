@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "memory.h"
+#include "vm.h"
 
 /** 
  * Reallocates an array to a specific memory location
