@@ -384,6 +384,16 @@ static void expression() {
 }
 
 /**
+ * An expression that is followed by a semicolon is an expression statement.
+ * This function will compile said expression.
+*/
+static void expressionStatement() {
+    expression();
+    consume(TOKEN_SEMICOLON, "Expect ';' after expression.");
+    emitByte(OP_POP);
+}
+
+/**
  * Evaluates the expression provided and prints it out.
 */
 static void printStatement() {
@@ -393,10 +403,41 @@ static void printStatement() {
 }
 
 /**
+ * Synchronize after a compile error.
+ * Essentially the last token or a "boundary marker" is found
+ * so the current error can have a point of reference with the prevention of
+ * subsequent errors.
+*/
+static void synchronize() {
+    parser.panicMode = false;
+
+    while(parser.current.type != TOKEN_EOF) {
+        if(parser.previous.type == TOKEN_SEMICOLON) return;
+        switch(parser.current.type) {
+            case TOKEN_CLASS:
+            case TOKEN_FUNCTION:
+            case TOKEN_VAR:
+            case TOKEN_FOR:
+            case TOKEN_IF:
+            case TOKEN_WHILE:
+            case TOKEN_PRINT:
+            case TOKEN_RETURN:
+                return;
+            default:
+                ;
+        }
+
+        advance();
+    }
+}
+
+/**
  * Compiles a single declaration.
 */
 static void declaration() {
     statement();
+
+    if(parser.panicMode) synchronize();
 }
 
 /**
@@ -405,6 +446,9 @@ static void declaration() {
 static void statement() {
     if(match(TOKEN_PRINT)) {
         printStatement();
+    }
+    else {
+        expressionStatement();
     }
 }
 
