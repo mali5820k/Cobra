@@ -40,7 +40,7 @@ typedef enum {
  * This is a function pointer type that allows us to use the name of this
  * type without having to handle that declaration within consecutive structs.
 */
-typedef void (*ParseFn)(); // Function Pointer Type
+typedef void (*ParseFn)(bool canAssign); // Function Pointer Type
 
 
 /**
@@ -237,7 +237,7 @@ static void defineVariable(uint8_t global) {
 /**
  * For Mathematical operators and those respective operations.
 */ 
-static void binary() {
+static void binary(bool canAssign) {
     TokenType operatorType = parser.previous.type;
     ParseRule* rule = getRule(operatorType);
     parsePrecedence((Precedence)(rule -> precedence + 1));
@@ -265,7 +265,7 @@ static void binary() {
  * or even terms used for depicting logic
  * like false, null, and true.
 */
-static void literal() {
+static void literal(bool canAssign) {
     switch(parser.previous.type) {
         case TOKEN_FALSE: emitByte(OP_FALSE); break;
         case TOKEN_NULL: emitByte(OP_NULL); break;
@@ -277,7 +277,7 @@ static void literal() {
 /**
  * For parenthesis grouping. May need to edit the error messages later.
 */ 
-static void grouping() {
+static void grouping(bool canAssign) {
     expression();
     consume(TOKEN_RIGHT_PAREN, "expect ')' after expression.");
 }
@@ -285,7 +285,7 @@ static void grouping() {
 /**
  * Emmitting constant numerical values.
 */ 
-static void number() {
+static void number(bool canAssign) {
     double value = strtod(parser.previous.start, NULL);
     emitConstant(NUMBER_VAL(value));
 }
@@ -293,7 +293,7 @@ static void number() {
 /**
  * Produces instructions for strings. Future goals include handling of escape characters.
 */
-static void string() {
+static void string(bool canAssign) {
     emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length -2)));
 }
 
@@ -301,16 +301,20 @@ static void string() {
  * Calls identifierConstant() for taking a token and adding it to a Chunk's constant table as a string.
  * "Helper Function"
 */
-static void namedVariable(Token name) {
+static void namedVariable(Token name, bool canAssign) {
     uint8_t arg = identifierConstant(&name);
-    emitBytes(OP_GET_GLOBAL, arg);
+    if(canAssign & match(TOKEN_EQUAL)) {
+        expression();
+        emitBytes(OP_SET_GLOBAL, arg);
+    }
+    else {emitBytes(OP_GET_GLOBAL, arg);}
 }
 
 /**
  * Variable parser function.
 */
-static void variable() {
-    namedVariable(parser.previous);
+static void variable(bool canAssign) {
+    namedVariable(parser.previous, canAssign);
 }
 
 /**
@@ -320,7 +324,7 @@ static void variable() {
  * then the processing on this expression will halt until another hander function is called
  * like binary. 
 */
-static void unary() {
+static void unary(bool canAssign) {
     // Checkout https://craftinginterpreters.com/compiling-expressions.html#unary-negation
     // For the note on the multi-line negation expression error handling
 
@@ -399,11 +403,17 @@ static void parsePrecedence(Precedence precedence) {
         return;
     }
 
-    prefixRule();
+    bool canAssign = precedence <= PREC_ASSIGNMENT;
+    prefixRule(canAssign);
+    
     while(precedence <= getRule(parser.current.type) -> precedence) {
         advance();
         ParseFn infixRule = getRule(parser.previous.type) -> infix;
-        infixRule();
+        infixRule(canAssign);
+    }
+
+    if(canAssign && match(TOKEN_EQUAL)) {
+        error("Invalid assignment target.");
     }
 }
 
