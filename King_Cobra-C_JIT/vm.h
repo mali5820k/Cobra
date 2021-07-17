@@ -12,6 +12,7 @@ typedef struct {
     uint8_t* ip; // Instruction pointer, also known as PC as in program counter
     Value stack[STACK_MAX];
     Value* stackTop;
+    Table globals;
     Table strings;
     Obj* objects;
 } VM;

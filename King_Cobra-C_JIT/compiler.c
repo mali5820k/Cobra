@@ -213,6 +213,28 @@ static ParseRule* getRule(TokenType type);
 static void parsePrecedence(Precedence precedence);
 
 /**
+ * The name of a variable is stored as a string in a Chunk's constant table.
+*/
+static uint8_t identifierConstant(Token* name) {
+    return makeConstant(OBJ_VAL(copyString(name -> start, name -> length)));
+}
+
+/**
+ * Reads in a variable declaration with name and value.
+*/
+static uint8_t parseVariable(const char* errorMessage) {
+    consume(TOKEN_IDENTIFIER, errorMessage);
+    return identifierConstant(&parser.previous);
+}
+
+/**
+ * The index that a variable's name is assigned in the constant table within a Chunk.
+*/
+static void defineVariable(uint8_t global) {
+   emitBytes(OP_DEFINE_GLOBAL, global); 
+}
+
+/**
  * For Mathematical operators and those respective operations.
 */ 
 static void binary() {
@@ -276,6 +298,22 @@ static void string() {
 }
 
 /**
+ * Calls identifierConstant() for taking a token and adding it to a Chunk's constant table as a string.
+ * "Helper Function"
+*/
+static void namedVariable(Token name) {
+    uint8_t arg = identifierConstant(&name);
+    emitBytes(OP_GET_GLOBAL, arg);
+}
+
+/**
+ * Variable parser function.
+*/
+static void variable() {
+    namedVariable(parser.previous);
+}
+
+/**
  * Unary operations are in-place logic operations, for example:
  * var x = -(x + y) * 2;
  * The -(x + y) block will be processed first as a unary (one) operation
@@ -325,7 +363,7 @@ ParseRule rules[] = {
   [TOKEN_GREATER_EQUAL] = {NULL,     binary, PREC_EQUALITY},
   [TOKEN_LESS]          = {NULL,     binary, PREC_EQUALITY},
   [TOKEN_LESS_EQUAL]    = {NULL,     binary, PREC_EQUALITY},
-  [TOKEN_IDENTIFIER]    = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_IDENTIFIER]    = {variable, NULL,   PREC_NONE},
   [TOKEN_STRING]        = {string,   NULL,   PREC_NONE},
   [TOKEN_NUMBER]        = {number,   NULL,   PREC_NONE},
   [TOKEN_AND]           = {NULL,     NULL,   PREC_NONE},
@@ -384,6 +422,23 @@ static void expression() {
 }
 
 /**
+ * Compiles variable declarations.
+*/
+static void varDeclaration() {
+    uint8_t global = parseVariable("Expect variable name.");
+
+    if(match(TOKEN_EQUAL)) {
+        expression();
+    }
+    else {
+        emitByte(OP_NULL);
+    }
+    consume(TOKEN_SEMICOLON, "Expect ';' after variable declaration.");
+
+    defineVariable(global);
+}
+
+/**
  * An expression that is followed by a semicolon is an expression statement.
  * This function will compile said expression.
 */
@@ -435,7 +490,12 @@ static void synchronize() {
  * Compiles a single declaration.
 */
 static void declaration() {
-    statement();
+    if(match(TOKEN_VAR)) {
+        varDeclaration();
+    }
+    else {
+        statement();
+    }
 
     if(parser.panicMode) synchronize();
 }
