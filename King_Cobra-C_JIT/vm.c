@@ -115,6 +115,7 @@ static InterpretResult run() {
                 Value value;
                 if(!tableGet(&vm.globals, name, &value)) {
                     runtimeError("Undefined variable '%s'.", name -> chars);
+                    return INTERPRET_RUNTIME_ERROR;
                 }
 
                 push(value);
