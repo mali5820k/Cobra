@@ -10,7 +10,7 @@ The book I am actively reading to accomplish this project is "Crafting Interpret
 ## Important Notes for compiling and running the interpreter
 
 ### For Windows 10 users:
-- If you want to skip the manual build process, you can grab a pre-built executable from the [releases](github.com/mali5820k/KC-Programming-Language/releases) page. Keep in mind that this may not be the most current version.
+- If you want to skip the manual build process, you can grab a pre-built executable from the [releases](https://github.com/mali5820k/KC-Programming-Language/releases) page. Keep in mind that this may not be the most current version.
 - To run the interpreter, you need to first install Clang from the pre-built binaries for Windows 10 on Clang's website, as well as Python 3.9 or higher. An alternative solution is installing GNU tools to run Make files on windows as well. 
 - Then you can run the python script in powershell, cmd, or a terminal window of your choice to produce the Interpreter_Program.exe program. 
 - Finally, you can type away in the program once you have launched it.
