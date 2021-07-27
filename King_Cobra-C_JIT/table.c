@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+
 #include "memory.h"
 #include "object.h"
 #include "table.h"
@@ -55,6 +56,9 @@ static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
         else if(entry -> key == key) {
             return entry;
         }
+
+        // See if this line was missing:
+        index = (index + 1) % capacity;
     }
 }
 

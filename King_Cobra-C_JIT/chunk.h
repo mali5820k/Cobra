@@ -19,7 +19,7 @@ typedef enum {
     OP_EQUAL,
     OP_GREATER,
     OP_LESS,
-    OP_GREATER_EQUAL,   // Will implment these three instructions later
+    OP_GREATER_EQUAL,   // Will implement these three instructions later
     OP_LESS_EQUAL,    // once the required instructions are tested and
     OP_NOT_EQUAL,       // fully functional
     OP_ADD,

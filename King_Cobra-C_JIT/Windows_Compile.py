@@ -42,9 +42,8 @@ def main():
                 objectFilesString = ' '.join(objectFiles)
                 print("{} {} {} {} -o {}".format(compiler, cfilesString, objectFilesString, tags, outputFileName))
                 os.system("{} {} {} {} -o {}".format(compiler, cfilesString, objectFilesString, tags, outputFileName))
-                canClear = True
 
-            elif(userInput == "clear" and canClear):
+            elif(userInput == "clear"):
                 for file in os.listdir('.'):
                     if file.endswith(".o"):
                         objectFiles.append(file)

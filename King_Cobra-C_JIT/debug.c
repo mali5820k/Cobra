@@ -52,7 +52,7 @@ int disassembleInstruction(Chunk* chunk, int offset) {
         case OP_GET_GLOBAL:
             return constantInstruction("OP_GET_GLOBAL", chunk, offset);
         case OP_DEFINE_GLOBAL:
-            return simpleInstruction("OP_DEFINE_GLOBAL", offset);
+            return constantInstruction("OP_DEFINE_GLOBAL", chunk, offset);
         case OP_SET_GLOBAL:
             return constantInstruction("OP_SET_GLOBAL", chunk, offset);
         case OP_EQUAL:
