@@ -67,11 +67,10 @@ int main(int argc, char* argv[]) {
 		runFile(argv[1]);
 	}
 	else {
-		fprintf(stderr, "Usage: KingCobra [path] \n");
+		fprintf(stderr, "Usage: ./Interpreter [path] \n");
 		exit(64);
 	}
 	
 	freeVM();
 	return 0;
 }
-

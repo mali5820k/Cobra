@@ -1,0 +1,4 @@
+var test = "string";
+var test2 = "string2";
+test = "someting" + test2;
+print test;

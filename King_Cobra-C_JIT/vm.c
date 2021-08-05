@@ -12,6 +12,7 @@
 /**
  * Function prototypes:
 */
+/*
 static void resetStack();
 static void runtimeError(const char* format, ...);
 static void concatenate();
@@ -25,7 +26,7 @@ void push(Value value);
 
 Value pop();
 InterpretResult interpret(const char* source);
-
+*/
 
 /**
  * Virtual Machine reference:
@@ -75,6 +76,7 @@ static InterpretResult run() {
     #define READ_BYTE() (*vm.ip++)
     #define READ_CONSTANT() (vm.chunk -> constants.values[READ_BYTE()])
     #define READ_STRING() AS_STRING(READ_CONSTANT())
+
     // This checks that both operands are numbers, otherwise, we throw a runtime error
     #define BINARY_OP(valueType, op) \
         do { \ 
@@ -118,7 +120,6 @@ static InterpretResult run() {
                     runtimeError("Undefined variable '%s'.", name -> chars);
                     return INTERPRET_RUNTIME_ERROR;
                 }
-
                 push(value);
                 break;
             }
@@ -128,6 +129,7 @@ static InterpretResult run() {
                 pop();
                 break;
             }
+            
             case OP_SET_GLOBAL: {
                 ObjString* name = READ_STRING();
                 if(tableSet(&vm.globals, name, peek(0))) {
@@ -146,20 +148,16 @@ static InterpretResult run() {
             case OP_GREATER:    BINARY_OP(BOOL_VAL, >); break;
             case OP_LESS:       BINARY_OP(BOOL_VAL, <); break;
             case OP_ADD: {
-                // Note: can create toString() methods for each type to allow for string + numerical or boolean addition
-                // to create a new string to return.
-                // Peek current position, then next position in stack for the same type
                 if(IS_STRING(peek(0)) && IS_STRING(peek(1))) {
                     concatenate();
-                }
+                } 
                 else if(IS_NUMBER(peek(0)) && IS_NUMBER(peek(1))) {
                     double b = AS_NUMBER(pop());
                     double a = AS_NUMBER(pop());
-
                     push(NUMBER_VAL(a + b));
-                }
+                } 
                 else {
-                    runtimeError("Operands must be numbers or strings.");
+                    runtimeError("Operands must be two numbers or two strings.");
                     return INTERPRET_RUNTIME_ERROR;
                 }
                 break;

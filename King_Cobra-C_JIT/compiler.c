@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "common.h"
 #include "compiler.h"
 #include "scanner.h"
@@ -40,6 +41,7 @@ typedef enum {
  * This is a function pointer type that allows us to use the name of this
  * type without having to handle that declaration within consecutive structs.
 */
+//typedef void (*ParseFn)();
 typedef void (*ParseFn)(bool canAssign); // Function Pointer Type
 
 
@@ -231,7 +233,7 @@ static uint8_t parseVariable(const char* errorMessage) {
  * The index that a variable's name is assigned in the constant table within a Chunk.
 */
 static void defineVariable(uint8_t global) {
-   emitBytes(OP_DEFINE_GLOBAL, global); 
+   emitBytes(OP_DEFINE_GLOBAL, global);
 }
 
 /**
@@ -279,7 +281,7 @@ static void literal(bool canAssign) {
 */ 
 static void grouping(bool canAssign) {
     expression();
-    consume(TOKEN_RIGHT_PAREN, "expect ')' after expression.");
+    consume(TOKEN_RIGHT_PAREN, "Expect ')' after expression.");
 }
 
 /**
@@ -294,7 +296,7 @@ static void number(bool canAssign) {
  * Produces instructions for strings. Future goals include handling of escape characters.
 */
 static void string(bool canAssign) {
-    emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length -2)));
+    emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
 }
 
 /**
@@ -303,7 +305,7 @@ static void string(bool canAssign) {
 */
 static void namedVariable(Token name, bool canAssign) {
     uint8_t arg = identifierConstant(&name);
-    if(canAssign & match(TOKEN_EQUAL)) {
+    if(canAssign && match(TOKEN_EQUAL)) {
         expression();
         emitBytes(OP_SET_GLOBAL, arg);
     }
@@ -508,7 +510,7 @@ static void declaration() {
     else {
         statement();
     }
-
+    
     if(parser.panicMode) synchronize();
 }
 
