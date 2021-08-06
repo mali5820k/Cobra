@@ -7,15 +7,14 @@ def compileForLinux(compiler, tags, outputFileName):
 	currentFilePath = os.curdir
 	os.system("cd {}".format(currentFilePath))
 	cFiles = []
-	objectFiles = []
 	
 	for file in os.listdir('.'):
 		if file.endswith(".c"):
 			cFiles.append(file)
 
 	cfilesString = ' '.join(cFiles)
-	print("{} {} {} -o {}".format(compiler, tags, cfilesString, outputFileName))
-	os.system("{} {} {} -o {}".format(compiler, tags, cfilesString, outputFileName))
+	print("sudo {} {} {} -o {}".format(compiler, tags, cfilesString, outputFileName))
+	os.system("sudo {} {} {} -o {}".format(compiler, tags, cfilesString, outputFileName))
 	print("Done compiling. Program can be found in directory: {}\n".format(currentFilePath))
 	exit(1)
 
@@ -23,7 +22,6 @@ def compileForWindows(compiler, tags, outputFileName):
 	currentFilePath = os.curdir
 	os.system("cd {}".format(currentFilePath))
 	cFiles = []
-	objectFiles = []
 	
 	for file in os.listdir('.'):
 		if file.endswith(".c"):
@@ -44,14 +42,9 @@ def main():
 	osPlatform = sys.platform
 	compiler = ""
 
-	clangWindows = "clang"
-	clangLinux = "clang-12"
-	gccLinux = "gcc"
-
-	cFiles = []
-	cFilesString = ""
+	gcc = "gcc"
 	outputFileName = "Interpreter_Program"
-	tags = "-Wall -o2"
+	tags = "-Wall -O2"
 
 	try:
 		# For Windows Users:
@@ -59,14 +52,14 @@ def main():
 			print("If you're having too many complications running this script, please look at pre-built binaries on the releases page on the Github Repo.\n")
 			print("Please pick your compiler by typing in the number associated with either one of the options provided.\n")
 			print("If you want to use a custom compiler, please choose the 'Custom compiler name' option below.\n")
-			userInput = int(input("\n1	Custom compiler name\n2   Windows 10: Clang-12 compiler\n\n=> "))
+			userInput = int(input("\n1	Custom compiler name\n2   Windows 10: GCC compiler\n\n=> "))
 			while(True):
 				if(userInput == 1):
 					compiler = input("\nPlease enter your compiler's name now:\n=> ")
 					print("\nYour current compiler's name is set to: '{}\n'".format(compiler))
 					break
 				elif userInput == 2:
-					compiler = clangWindows
+					compiler = gcc
 					print("\nYour current compiler's name is set to: '{}\n'".format(compiler))
 					break
 				else:
@@ -79,18 +72,14 @@ def main():
 		elif osPlatform == 'linux':
 			print("If you'd like to change your compiler, please select either the alternatives provided\n")
 			print("or choose the 'Custom compiler name' option below for custom compilers by typing in that option's associated number\n")
-			userInput = int(input("\n1	Custom compiler name\n2	Linux: GCC compiler\n3   Linux: Clang-12 compiler\n\n=> "))
+			userInput = int(input("\n1	Custom compiler name\n2	Linux: GCC compiler\n\n=> "))
 			while(True):
 				if(userInput == 1):
 					compiler = input("\nPlease enter your compiler's name now:\n=> ")
 					print("\nYour current compiler's name is set to: '{}\n'".format(compiler))
 					break
 				elif userInput == 2:
-					compiler = gccLinux
-					print("\nYour current compiler's name is set to: '{}\n'".format(compiler))
-					break
-				elif userInput == 3:
-					compiler = clangLinux
+					compiler = gcc
 					print("\nYour current compiler's name is set to: '{}\n'".format(compiler))
 					break
 				else:

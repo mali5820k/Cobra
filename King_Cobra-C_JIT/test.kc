@@ -4,6 +4,8 @@
 //print test;
 
 var a = 23;
-var b = 2983;
-var c = a * 2*b;
+var b = 10;
+var c = a + b;
 print (c);
+print (a + b);
+print (23 + 10);
