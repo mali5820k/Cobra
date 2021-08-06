@@ -1,9 +1,9 @@
 # King Cobra
 ### Project Goals/Focus:
   - A programming language inspired from Python's simplicity and C/C++'s speed.
-  - The language itself is going to be compiler-based with focus on portability via a VM (low-level Virtual Machine). Once a proof of concept is made with a functional VM, the focus will be to implement KC with LLVM, JVM, or to keep it as a standalone project for experience.
+  - The language itself is going to be compiler-based with focus on portability via a VM (low-level Virtual Machine). Once a proof of concept is made with a functional VM, the focus will be to implement KC entirely with the help of "Crafting Interpreters" by Robert (Bob) Nystrom, then to remake the language from scratch using my acquired knowledge from the book, or to keep this entire thing as a standalone project for experience.
 
-This is an ongoing project that is based off of interest in compiled languages.
+Again, this is an ongoing project that is based off of interest in compiled languages.
 The book I am actively reading to accomplish this project is "Crafting Interpreters" by Bob Nystrom which he has made publicly available at: https://craftinginterpreters.com/
 
 
@@ -11,16 +11,17 @@ The book I am actively reading to accomplish this project is "Crafting Interpret
 
 ### For Windows 10 users:
 - If you want to skip the manual build process, you can grab a pre-built executable from the [releases](https://github.com/mali5820k/KC-Programming-Language/releases) page. Keep in mind that this may not be the most current version.
-- To run the interpreter, you need to first install Clang from the pre-built binaries for Windows 10 on Clang's website, as well as Python 3.9 or higher. An alternative solution is installing GNU tools to run Make files on windows as well. 
-- Then you can run the python script in powershell, cmd, or a terminal window of your choice to produce the Interpreter_Program.exe program. 
+- To run the interpreter, you need to first install GCC for Windows 10 and if you don't want to use the build program executable, acquire Make for Windows as well.
+- If you don't want to use Make or the program executable, you can run the python build script in powershell, cmd, or a terminal window of your choice to produce the Interpreter_Program.exe program. Run the terminal of your choice as an administrator. 
 - Finally, you can type away in the program once you have launched it.
 
 ### For Mac OS users:
 - I haven't tested anything with Macs as I don't own one. I do know that Macs have Clang pre-installed and it's closest in terms of functionality to Linux as it's Unix-based, so you might be able to run the included clang make file or the python compile file for Linux and have the program compile to an executable binary.
+- I still recommend Mac users try to acquire GCC in some way as Clang has resulted in strange issues from build to build that weren't present in GCC.
 
 ### For Linux users:
-- Since this project is natively coded on Linux, you can simply run the make file for either GCC or Clang. You will need to install Clang first if you go choose to use the Clang make file. 
-- The python compile script for Linux will also work as long as you have python 3 and Clang installed. 
+- Since this project is natively coded on Linux, you can simply run the make file for GCC. 
+- The python build script will also work as long as you have python 3 installed or run the included executable (if there is one included at the time).
 - Once the program binary is compiled, you simply need to run the file in a terminal with
   ```./Interpreter_Program```
 
