@@ -1,0 +1,38 @@
+# This is the most elementary makefile I could make for this purpose
+# HAH, don't like this anymore
+
+Interpreter_Program: chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o object.o table.o
+	gcc -g chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o object.o table.o -O2 -o Interpreter_Program
+
+chunk.o: chunk.c chunk.h
+	clang-12 -g chunk.c -Wall
+
+compiler.o: compiler.c compiler.h
+	clang-12 -g compiler.c -Wall
+
+debug.o: debug.c debug.h
+	clang-12 -g debug.c -Wall
+
+main.o: main.c
+	clang-12 -g main.c -Wall
+
+memory.o: memory.c memory.h
+	clang-12 -g memory.c -Wall
+
+scanner.o: scanner.c scanner.h
+	clang-12 -g scanner.c -Wall
+
+value.o: value.c value.h
+	clang-12 -g value.c -Wall
+
+vm.o: vm.c vm.h
+	clang-12 -g vm.c -Wall
+
+object.o: object.c object.h
+	clang-12 -g object.c -Wall
+
+table.o: table.c table.h
+	clang-12 -g table.c -Wall
+
+clean:
+	rm *.o Interpreter_Program

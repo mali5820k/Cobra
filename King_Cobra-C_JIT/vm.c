@@ -12,7 +12,7 @@
 /**
  * Function prototypes:
 */
-/*
+
 static void resetStack();
 static void runtimeError(const char* format, ...);
 static void concatenate();
@@ -26,7 +26,7 @@ void push(Value value);
 
 Value pop();
 InterpretResult interpret(const char* source);
-*/
+
 
 /**
  * Virtual Machine reference:

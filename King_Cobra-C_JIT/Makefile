@@ -1,37 +1,8 @@
-# This is the most elementary makefile I could make for this purpose
-
-Interpreter_Program: chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o object.o table.o
-	clang-12 chunk.o compiler.o debug.o main.o memory.o scanner.o value.o vm.o object.o table.o -O2 -o Interpreter_Program
-
-chunk.o: chunk.c chunk.h
-	clang-12 -c chunk.c -Wall
-
-compiler.o: compiler.c compiler.h
-	clang-12 -c compiler.c -Wall
-
-debug.o: debug.c debug.h
-	clang-12 -c debug.c -Wall
-
-main.o: main.c
-	clang-12 -c main.c -Wall
-
-memory.o: memory.c memory.h
-	clang-12 -c memory.c -Wall
-
-scanner.o: scanner.c scanner.h
-	clang-12 -c scanner.c -Wall
-
-value.o: value.c value.h
-	clang-12 -c value.c -Wall
-
-vm.o: vm.c vm.h
-	clang-12 -c vm.c -Wall
-
-object.o: object.c object.h
-	clang-12 -c object.c -Wall
-
-table.o: table.c table.h
-	clang-12 -c table.c -Wall
+# I got tired of makefile errors and didn't want to spend the time to learn Cmake.
+# So I just will compile using this one-liner make command :)
+# Change gcc to clang-12 on Linux on line 5, or change it to simply clang if running in a powershell terminal on windows.
+Interpreter_Program:
+	gcc -g chunk.c compiler.c debug.c main.c memory.c scanner.c value.c vm.c object.c table.c -O2 -o Interpreter_Program
 
 clean:
 	rm *.o Interpreter_Program
