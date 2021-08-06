@@ -29,6 +29,7 @@
 *.dylib
 
 # Executables
+Interpreter_Program
 *.exe
 *.out
 *.app
