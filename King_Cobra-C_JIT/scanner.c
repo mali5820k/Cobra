@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+
 #include "common.h"
 #include "scanner.h"
 
@@ -20,7 +21,9 @@ void initScanner(const char* source) {
 }
 
 static bool isAlpha(char c) {
-    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+    return (c >= 'a' && c <= 'z') ||
+     (c >= 'A' && c <= 'Z') ||
+      c == '_';
 }
 
 static bool isDigit(char c) {
@@ -56,6 +59,7 @@ static Token makeToken(TokenType type) {
     Token token;
     token.type = type;
     token.start = scanner.start;
+    token.length = (int)(scanner.current - scanner.start);
     token.line = scanner.line;
     return token;
 }
