@@ -1,7 +1,7 @@
-//var test = "string";
-//var test2 = "string2";
-//test = "someting" + test2;
-//print test;
+var test = "string";
+var test2 = "string2";
+test = "someting" + test2;
+print test;
 
 var a = 23;
 var b = 10;
