@@ -13,6 +13,8 @@ typedef enum {
     OP_TRUE,
     OP_FALSE,
     OP_POP,
+    OP_GET_LOCAL,
+    OP_SET_LOCAL,
     OP_GET_GLOBAL,
     OP_DEFINE_GLOBAL,
     OP_SET_GLOBAL,
@@ -20,7 +22,7 @@ typedef enum {
     OP_GREATER,
     OP_LESS,
     OP_GREATER_EQUAL,   // Will implement these three instructions later
-    OP_LESS_EQUAL,    // once the required instructions are tested and
+    OP_LESS_EQUAL,    // once the required instructions are tested
     OP_NOT_EQUAL,       // fully functional
     OP_ADD,
     OP_SUBTRACT,
