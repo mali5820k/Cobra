@@ -1,11 +1,55 @@
-var test = "string";
-var test2 = "string2";
-test = "someting" + test2;
-print test;
+// This is a comment
 
-var a = 23;
-var b = 10;
-var c = a + b;
-print (c);
-print (a + b);
-print (23 + 10);
+// For context, KC is dynamically typed, so it will know what the variable's type is based off the value you assign to it.
+// Currently, there are local and global variables, if, while, and for statements, logical operators like or and and, 
+// string concatenation, numerical calculations like adding, subtracting, multiplying, dividing, as well as comparative
+// operations like >, <, <=, >=.
+
+// All statements need to be ended with a semicolon
+1 + 2; // This won't actually print you anything until you use the print function
+
+// This is how you declare variables:
+var nameOfVariable; // This guy gets initialized to null
+var nameOfVariable2 = 230;
+
+// Strings are declared with double quotes:
+var string = "Hello there!";
+
+// Print statements don't need parenthesis for whatever needs to be printed
+print "hello";
+print "hello " + "-don't you dare say Hello World!";
+print nameOfVariable;
+print nameOfVariable2;
+
+// If statements currently need parenthesis, but later the option to declare them without will be added:
+if (true) {
+    print "true";
+}
+else {
+    print "false";
+}
+
+// Another way to write them in one line:
+if (null == null) print "Null equals Null";
+
+// While loops are just like C, C++, JavaScript, Java, C#, and other C-like languages:
+var x = 0;
+while ("Hello" == "Hello" and x < 20) {
+    print x;
+    x = x + 1; // Sorry, ++, --, +=, -=, *=, and /= operations haven't been implemented yet
+}
+
+// For loops are just like how they are in C-based languages:
+// Again, pardon the i = i + 1, since I need to implement the other operators mentioned in the comment in the while loop above.
+for (var i = 0; i < 20; i = i + 1) {
+    print i;
+}
+
+// You can also do infinite for loops like C-based languages:
+for (;;) {
+    print "Since I haven't implemented break statements yet,";
+    print "you're stuck in an infinite loop, hit ctrl + c to quit the application";
+}
+
+// More features will be added here as the feature list grows.
+// Functions will be coming soon
