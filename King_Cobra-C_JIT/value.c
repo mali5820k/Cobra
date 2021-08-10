@@ -9,9 +9,9 @@
  * Initializes an empty value array with no memory allocation.
 */
 void initValueArray(ValueArray* array) {
-    array -> values = NULL;
-    array -> capacity = 0;
-    array -> count = 0;
+    array->values = NULL;
+    array->capacity = 0;
+    array->count = 0;
 }
 
 /**
@@ -20,21 +20,21 @@ void initValueArray(ValueArray* array) {
  * when necessary.
 */
 void writeValueArray(ValueArray* array, Value value) {
-    if(array -> capacity < array -> count + 1) {
-        int oldCapacity = array -> capacity;
-        array -> capacity = GROW_CAPACITY(oldCapacity);
-        array -> values = GROW_ARRAY(Value, array -> values, oldCapacity, array -> capacity);
+    if(array->capacity < array->count + 1) {
+        int oldCapacity = array->capacity;
+        array->capacity = GROW_CAPACITY(oldCapacity);
+        array->values = GROW_ARRAY(Value, array->values, oldCapacity, array->capacity);
     }
 
-    array -> values[array -> count] = value;
-    array -> count++;
+    array->values[array->count] = value;
+    array->count++;
 }
 
 /**
  * Safely frees the memory allocated for the provided value array.
 */
 void freeValueArray(ValueArray* array) {
-    FREE_ARRAY(Value, array -> values, array -> capacity);
+    FREE_ARRAY(Value, array->values, array->capacity);
     initValueArray(array);
 }
 

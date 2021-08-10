@@ -16,16 +16,16 @@
  * A Hash table is essentiallly a dynamic array.
 */
 void initTable(Table* table) {
-    table -> count = 0;
-    table -> capacity = 0;
-    table -> entries = NULL;
+    table->count = 0;
+    table->capacity = 0;
+    table->entries = NULL;
 }
 
 /**
  * Frees the memory and all allocated entries in the specified Hash table.
 */
 void freeTable(Table* table) {
-    FREE_ARRAY(Entry, table -> entries, table -> capacity);
+    FREE_ARRAY(Entry, table->entries, table->capacity);
     initTable(table);
 }
 
@@ -38,22 +38,22 @@ void freeTable(Table* table) {
  * collision handling.
 */
 static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
-    uint32_t index = key -> hash % capacity;
+    uint32_t index = key->hash % capacity;
     Entry* tombstone = NULL;
     // Linear probing is handled with the assignment of a new index.
     // The probing will wrap around to the start of the hash table due
     // to the ```(index + 1) % capacity``` calculation.
     for(;;) {
         Entry* entry = &entries[index];
-        if(entry -> key == NULL) {
-            if(IS_NULL(entry -> value)) {
+        if(entry->key == NULL) {
+            if(IS_NULL(entry->value)) {
                 return tombstone != NULL ? tombstone : entry;
             }
             else {
                 if(tombstone == NULL) tombstone = entry;
             }
         }
-        else if(entry -> key == key) {
+        else if(entry->key == key) {
             return entry;
         }
         
@@ -68,12 +68,12 @@ static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
  * if the value is found, otherwise false.
 */
 bool tableGet(Table* table, ObjString* key, Value* value) {
-    if(table -> count == 0) return false;
+    if(table->count == 0) return false;
 
-    Entry* entry = findEntry(table -> entries, table -> capacity, key);
-    if(entry -> key == NULL) return false;
+    Entry* entry = findEntry(table->entries, table->capacity, key);
+    if(entry->key == NULL) return false;
 
-    *value = entry -> value;
+    *value = entry->value;
     return true;
 }
 
@@ -89,20 +89,20 @@ static void adjustCapacity(Table* table, int capacity) {
         entries[i].value = NULL_VAL;
     }
 
-    table -> count = 0;
-    for(int i = 0; i < table -> capacity; i++) {
-        Entry* entry = &table -> entries[i];
-        if(entry -> key == NULL) continue;
+    table->count = 0;
+    for(int i = 0; i < table->capacity; i++) {
+        Entry* entry = &table->entries[i];
+        if(entry->key == NULL) continue;
 
-        Entry* dest = findEntry(entries, capacity, entry -> key);
-        dest -> key = entry -> key;
-        dest -> value = entry -> value;
-        table -> count++;
+        Entry* dest = findEntry(entries, capacity, entry->key);
+        dest->key = entry->key;
+        dest->value = entry->value;
+        table->count++;
     }
     
-    FREE_ARRAY(Entry, table -> entries, table -> capacity);
-    table -> entries = entries;
-    table -> capacity = capacity;
+    FREE_ARRAY(Entry, table->entries, table->capacity);
+    table->entries = entries;
+    table->capacity = capacity;
 }
 
 
@@ -112,17 +112,17 @@ static void adjustCapacity(Table* table, int capacity) {
 */
 bool tableSet(Table* table, ObjString* key, Value value) {
     // Allocate the Entry array and ensure that the size is suitable for adding a new entry
-    if(table -> count + 1 > table -> capacity * TABLE_MAX_LOAD) {
-        int capacity = GROW_CAPACITY(table -> capacity);
+    if(table->count + 1 > table->capacity * TABLE_MAX_LOAD) {
+        int capacity = GROW_CAPACITY(table->capacity);
         adjustCapacity(table, capacity);
     }
 
-    Entry* entry = findEntry(table -> entries, table -> capacity, key);
-    bool isNewKey = entry -> key == NULL;
-    if(isNewKey && IS_NULL(entry -> value)) table -> count++;
+    Entry* entry = findEntry(table->entries, table->capacity, key);
+    bool isNewKey = entry->key == NULL;
+    if(isNewKey && IS_NULL(entry->value)) table->count++;
 
-    entry -> key = key;
-    entry -> value = value;
+    entry->key = key;
+    entry->value = value;
     return isNewKey;
 }
 
@@ -131,16 +131,16 @@ bool tableSet(Table* table, ObjString* key, Value value) {
 */
 bool tableDelete(Table* table, ObjString* key) {
     // If the table is empty, bail
-    if(table -> count == 0) return false;
+    if(table->count == 0) return false;
 
     // Find the entry associated with the specified key
-    Entry* entry = findEntry(table -> entries, table -> capacity, key);
+    Entry* entry = findEntry(table->entries, table->capacity, key);
     // If there is no entry there or a tombstone, bail
-    if(entry -> key == NULL) return false;
+    if(entry->key == NULL) return false;
 
     // Otherwise, we will set at that entries' position a tombstone.
-    entry -> key = NULL;
-    entry -> value = BOOL_VAL(true);
+    entry->key = NULL;
+    entry->value = BOOL_VAL(true);
     return true;
 }
 
@@ -149,27 +149,27 @@ bool tableDelete(Table* table, ObjString* key) {
  * for determining positions for entries in the target hash table.
 */
 void tableAddAll(Table* from, Table* to) {
-    for(int i = 0; i < from -> capacity; i++) {
-        Entry* entry = &from -> entries[i];
-        if(entry -> key != NULL) {
-            tableSet(to, entry -> key, entry -> value);
+    for(int i = 0; i < from->capacity; i++) {
+        Entry* entry = &from->entries[i];
+        if(entry->key != NULL) {
+            tableSet(to, entry->key, entry->value);
         }
     }
 }
 
 ObjString* tableFindString(Table* table, const char* chars, int length, uint32_t hash) {
-    if(table -> count == 0) return NULL;
+    if(table->count == 0) return NULL;
 
-    uint32_t index = hash % table -> capacity;
+    uint32_t index = hash % table->capacity;
 
     for(;;) {
-        Entry* entry = &table -> entries[index];
-        if(entry -> key == NULL) {
-            if(IS_NULL(entry -> value)) return NULL;
+        Entry* entry = &table->entries[index];
+        if(entry->key == NULL) {
+            if(IS_NULL(entry->value)) return NULL;
         }
-        else if(entry -> key -> length == length && entry -> key -> hash == hash && memcmp(entry -> key -> chars, chars, length) == 0) {
-            return entry -> key;
+        else if(entry->key->length == length && entry->key->hash == hash && memcmp(entry->key->chars, chars, length) == 0) {
+            return entry->key;
         }
-        index = (index + 1) % table -> capacity;
+        index = (index + 1) % table->capacity;
     }
 }

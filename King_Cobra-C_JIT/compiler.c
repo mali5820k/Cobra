@@ -55,7 +55,19 @@ typedef struct {
     Precedence precedence;
 } ParseRule;
 
+typedef struct {
+    Token name;
+    int depth;
+} Local;
+
+typedef struct {
+    Local locals[UINT8_COUNT];
+    int localCount;
+    int scopeDepth;
+} Compiler;
+
 Parser parser;
+Compiler* current = NULL;
 Chunk* compilingChunk;
 
 /**
@@ -72,16 +84,16 @@ static Chunk* currentChunk() {
 static void errorAt(Token* token, const char* message) {
     if(parser.panicMode) return; // To prevent any cascading errors from source error from being reported
     parser.panicMode = true;
-    fprintf(stderr, "[line%d] Error", token -> line);
+    fprintf(stderr, "[line%d] Error", token->line);
 
-    if(token -> type == TOKEN_EOF) {
+    if(token->type == TOKEN_EOF) {
         fprintf(stderr, " at end");
     }
-    else if(token -> type == TOKEN_ERROR) {
+    else if(token->type == TOKEN_ERROR) {
         // Do nothing
     }
     else {
-        fprintf(stderr, " at '%.*s'", token -> length, token -> start);
+        fprintf(stderr, " at '%.*s'", token->length, token->start);
     }
 
     fprintf(stderr, ": %s\n", message);
@@ -191,6 +203,12 @@ static void emitConstant(Value value) {
     emitBytes(OP_CONSTANT, makeConstant(value));
 }
 
+static void initCompiler(Compiler* compiler) {
+    compiler->localCount = 0;
+    compiler->scopeDepth = 0;
+    current = compiler;
+}
+
 /**
  * Ends the compiling process.
 */
@@ -203,6 +221,14 @@ static void endCompiler() {
         disassembleChunk(currentChunk(), "code");
     }
     #endif
+}
+
+static void beginScope() {
+    current->scopeDepth++;
+}
+
+static void endScope() {
+    current->scopeDepth--;
 }
 
 /** 
@@ -218,7 +244,26 @@ static void parsePrecedence(Precedence precedence);
  * The name of a variable is stored as a string in a Chunk's constant table.
 */
 static uint8_t identifierConstant(Token* name) {
-    return makeConstant(OBJ_VAL(copyString(name -> start, name -> length)));
+    return makeConstant(OBJ_VAL(copyString(name->start, name->length)));
+}
+
+
+static void addLocal(Token name) {
+    // Ideally, try to increase this count to a much larger value or revamp the bytecode representation for more
+    if(current->localCount == UINT8_COUNT) {
+        error("Too many local variables in function.");
+    }
+
+    Local* local = &current->locals[current->localCount++];
+    local->name = name;
+    local->depth = current->scopeDepth;
+}
+
+static void declareVariable() {
+    if(current->scopeDepth == 0) return;
+
+    Token* name = &parser.previous;
+    addLocal(*name);
 }
 
 /**
@@ -226,6 +271,10 @@ static uint8_t identifierConstant(Token* name) {
 */
 static uint8_t parseVariable(const char* errorMessage) {
     consume(TOKEN_IDENTIFIER, errorMessage);
+
+    declareVariable();
+    if(current->scopeDepth > 0) return 0;
+
     return identifierConstant(&parser.previous);
 }
 
@@ -233,7 +282,12 @@ static uint8_t parseVariable(const char* errorMessage) {
  * The index that a variable's name is assigned in the constant table within a Chunk.
 */
 static void defineVariable(uint8_t global) {
-   emitBytes(OP_DEFINE_GLOBAL, global);
+    // If the variable that's being defined isn't in the global scope depth, then return
+    if(current->scopeDepth > 0) {
+        return;
+    }
+
+    emitBytes(OP_DEFINE_GLOBAL, global);
 }
 
 /**
@@ -242,7 +296,7 @@ static void defineVariable(uint8_t global) {
 static void binary(bool canAssign) {
     TokenType operatorType = parser.previous.type;
     ParseRule* rule = getRule(operatorType);
-    parsePrecedence((Precedence)(rule -> precedence + 1));
+    parsePrecedence((Precedence)(rule->precedence + 1));
 
     // Later will use OP_GREATER_EQUAL as well as OP_LESS_EQUAL
     // for the OP codes of TOKEN_GREATER_LESS and TOKEN_LESS_EQUAL.
@@ -401,7 +455,7 @@ ParseRule rules[] = {
 */
 static void parsePrecedence(Precedence precedence) {
     advance();
-    ParseFn prefixRule = getRule(parser.previous.type) -> prefix;
+    ParseFn prefixRule = getRule(parser.previous.type)->prefix;
     if(prefixRule == NULL) {
         error("Expect expression.");
         return;
@@ -410,9 +464,9 @@ static void parsePrecedence(Precedence precedence) {
     bool canAssign = precedence <= PREC_ASSIGNMENT;
     prefixRule(canAssign);
     
-    while(precedence <= getRule(parser.current.type) -> precedence) {
+    while(precedence <= getRule(parser.current.type)->precedence) {
         advance();
-        ParseFn infixRule = getRule(parser.previous.type) -> infix;
+        ParseFn infixRule = getRule(parser.previous.type)->infix;
         infixRule(canAssign);
     }
 
@@ -433,6 +487,14 @@ static ParseRule* getRule(TokenType type) {
 */
 static void expression() {
     parsePrecedence(PREC_ASSIGNMENT);
+}
+
+static void block() {
+    while(!check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) {
+        declaration();
+    }
+
+    consume(TOKEN_RIGHT_BRACE, "Expect '}' after block.");
 }
 
 /**
@@ -521,6 +583,11 @@ static void statement() {
     if(match(TOKEN_PRINT)) {
         printStatement();
     }
+    else if(match(TOKEN_LEFT_BRACE)) {
+        beginScope();
+        block();
+        endScope();
+    }
     else {
         expressionStatement();
     }
@@ -532,6 +599,8 @@ static void statement() {
 */
 bool compile(const char* source, Chunk* chunk) {
     initScanner(source);
+    Compiler compiler;
+    initCompiler(&compiler);
     compilingChunk = chunk;
 
     parser.hadError = false;

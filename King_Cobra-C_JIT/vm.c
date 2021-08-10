@@ -52,8 +52,8 @@ static void runtimeError(const char* format, ...) {
     va_end(args);
     fputs("\n", stderr);
 
-    size_t instruction = vm.ip - vm.chunk -> code -1;
-    int line = vm.chunk -> lines[instruction];
+    size_t instruction = vm.ip - vm.chunk->code -1;
+    int line = vm.chunk->lines[instruction];
     fprintf(stderr, "[line %d] in script\n", line);
     resetStack();
 }
@@ -74,7 +74,7 @@ void freeVM() {
 // The "heart" of the VM
 static InterpretResult run() {
     #define READ_BYTE() (*vm.ip++)
-    #define READ_CONSTANT() (vm.chunk -> constants.values[READ_BYTE()])
+    #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
     #define READ_STRING() AS_STRING(READ_CONSTANT())
 
     // This checks that both operands are numbers, otherwise, we throw a runtime error
@@ -99,7 +99,7 @@ static InterpretResult run() {
             }
             printf("\n");
 
-            disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk -> code));
+            disassembleInstruction(vm.chunk, (int)(vm.ip - vm.chunk->code));
         #endif
 
         uint8_t instruction;
@@ -117,7 +117,7 @@ static InterpretResult run() {
                 ObjString* name = READ_STRING();
                 Value value;
                 if(!tableGet(&vm.globals, name, &value)) {
-                    runtimeError("Undefined variable '%s'.", name -> chars);
+                    runtimeError("Undefined variable '%s'.", name->chars);
                     return INTERPRET_RUNTIME_ERROR;
                 }
                 push(value);
@@ -134,7 +134,7 @@ static InterpretResult run() {
                 ObjString* name = READ_STRING();
                 if(tableSet(&vm.globals, name, peek(0))) {
                     tableDelete(&vm.globals, name);
-                    runtimeError("Undefined variable '%s'.", name -> chars);
+                    runtimeError("Undefined variable '%s'.", name->chars);
                     return INTERPRET_RUNTIME_ERROR;
                 }
                 break;
@@ -222,10 +222,10 @@ static void concatenate() {
     ObjString* b = AS_STRING(pop());
     ObjString* a = AS_STRING(pop());
 
-    int length = a -> length + b -> length;
+    int length = a->length + b->length;
     char* chars = ALLOCATE(char, length + 1);
-    memcpy(chars, a -> chars, a -> length);
-    memcpy(chars + a -> length, b -> chars, b -> length);
+    memcpy(chars, a->chars, a->length);
+    memcpy(chars + a->length, b->chars, b->length);
     chars[length] = '\0';
 
     ObjString* result = takeString(chars, length);
@@ -243,7 +243,7 @@ InterpretResult interpret(const char* source) {
     }
 
     vm.chunk = &chunk;
-    vm.ip = vm.chunk -> code;
+    vm.ip = vm.chunk->code;
 
     InterpretResult result = run();
 
