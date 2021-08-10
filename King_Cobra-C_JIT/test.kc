@@ -21,9 +21,21 @@ print "hello " + "-don't you dare say Hello World!";
 print nameOfVariable;
 print nameOfVariable2;
 
+// Variables have scope, so if you declare a block with {}, that will encapsulate the variables within it to that scope.
+// OH you also currently can only declare upto 256 local variables per-scope. That limit will go away (hopefully) as more optimizations are made.
+var banana = "banana";
+{
+    var banana = 2000;
+    print banana;
+}
+print banana;
+
 // If statements currently need parenthesis, but later the option to declare them without will be added:
-if (true) {
+if (true == false) {
     print "true";
+}
+else if (1 == 1) {
+    print "else if branch works!";
 }
 else {
     print "false";
