@@ -1,15 +1,23 @@
 #ifndef kc_vm_h
 #define kc_vm_h
 
-#include "chunk.h"
+#include "object.h"
 #include "table.h"
 #include "value.h"
 
+#define FRAMES_MAX 64
 #define STACK_MAX 256
 
 typedef struct {
-    Chunk* chunk;
-    uint8_t* ip; // Instruction pointer, also known as PC as in program counter
+    ObjFunction* function;
+    uint8_t* ip;
+    Value* slots;
+} CallFrame;
+
+typedef struct {
+    CallFrame frames[FRAMES_MAX];
+    int frameCount;
+
     Value stack[STACK_MAX];
     Value* stackTop;
     Table globals;

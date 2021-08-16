@@ -8,6 +8,6 @@
  * The function that calls and pieces the functions of the compiler together and runs.
  * Think of this as the "main" method of the compiler.
 */
-bool compile(const char* source, Chunk* chunk);
+ObjFunction* compile(const char* source);
 
 #endif
