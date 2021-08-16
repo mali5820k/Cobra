@@ -58,10 +58,19 @@ for (var i = 0; i < 20; i = i + 1) {
 }
 
 // You can also do infinite for loops like C-based languages:
-for (;;) {
-    print "Since I haven't implemented break statements yet,";
-    print "you're stuck in an infinite loop, hit ctrl + c to quit the application";
+//for (;;) {
+//    print "Since I haven't implemented break statements yet,";
+//    print "you're stuck in an infinite loop, hit ctrl + c to quit the application";
+//}
+
+// This is a sample function declaration
+// You can have a maximum of 255 of these parameters
+// don't do it! It'll throw you an error!
+func sampleFunc(x, y, z, a, b, c) {
+	print "Ayyye";
 }
+
+print sampleFunc;
 
 // More features will be added here as the feature list grows.
 // Functions will be coming soon
