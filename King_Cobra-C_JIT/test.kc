@@ -66,11 +66,40 @@ for (var i = 0; i < 20; i = i + 1) {
 // This is a sample function declaration
 // You can have a maximum of 255 of these parameters
 // don't do it! It'll throw you an error!
-func sampleFunc(x, y, z, a, b, c) {
-	print "Ayyye";
+func repeatedSum(numTimes, lastSum) {
+	var sum = lastSum;
+	if (numTimes == 0) {
+		return sum;
+	}
+	
+	if (sum < 1) {
+		sum = 1;
+	}
+	else {
+		sum = sum * 2;
+	}
+	
+	return repeatedSum(numTimes - 1, sum);
 }
 
-print sampleFunc;
+func badFib(n) {
+	if (n < 2) return n;
+	
+	return badFib(n-2) + badFib(n-1);
+}
+
+print "Now going to use a built-in function from C for time.";
+var start_time = clock();
+print repeatedSum(10, 1);
+var elapsed_time = clock() - start_time;
+print elapsed_time; print " seconds. Now running a really bad recursive fibonacci sequence:";
+start_time = clock();
+print badFib(20); // This gets exponentially longer to run as you surpass 35 and into 40
+elapsed_time = clock() - start_time;
+print elapsed_time; print " seconds.";
+
+
+
 
 // More features will be added here as the feature list grows.
 // Functions will be coming soon
