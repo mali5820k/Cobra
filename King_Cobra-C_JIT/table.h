@@ -63,4 +63,9 @@ void tableAddAll(Table* from, Table* to);
  * Looks for a string in the given table and checks for equivalence.
 */
 ObjString* tableFindString(Table* table, const char* chars, int length, uint32_t hash);
+
+void tableRemoveWhite(Table* table);
+
+void markTable(Table* table);
+
 #endif

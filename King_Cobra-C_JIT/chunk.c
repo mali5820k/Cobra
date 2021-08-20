@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include "chunk.h"
 #include "memory.h"
+#include "vm.h"
 
 /**
  * Initializes an empty Chunk with no memory allocation.
@@ -48,6 +49,8 @@ void writeChunk(Chunk* chunk, uint8_t byte, int line) {
  * Adds the provided constant instruction to the specified Chunk.
 */
 int addConstant(Chunk* chunk, Value value) {
+    push(value);
     writeValueArray(&chunk->constants, value);
+    pop();
     return chunk->constants.count -1;
 }

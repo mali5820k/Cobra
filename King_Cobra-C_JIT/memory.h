@@ -41,6 +41,12 @@
 */
 void* reallocate(void* pointer, size_t oldSize, size_t newSize);
 
+void markObject(Obj* object);
+
+void markValue(Value value);
+
+void collectGarbage();
+
 /**
  * Parsing through a linked list and freeing all object nodes.
 */

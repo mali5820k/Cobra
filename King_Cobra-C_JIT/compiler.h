@@ -9,5 +9,6 @@
  * Think of this as the "main" method of the compiler.
 */
 ObjFunction* compile(const char* source);
+void markCompilerRoots();
 
 #endif
