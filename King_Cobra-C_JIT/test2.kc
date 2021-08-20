@@ -1,0 +1,7 @@
+// Classes, finally
+class Fruit{}
+
+var apple = Fruit();
+apple.shape = "hearty"; // Like python, you can litterally create new class elements by using an assignment operator
+
+print(apple.shape);

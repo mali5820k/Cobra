@@ -94,7 +94,7 @@ print repeatedSum(10, 1);
 var elapsed_time = clock() - start_time;
 print elapsed_time; print " seconds. Now running a really bad recursive fibonacci sequence:";
 start_time = clock();
-print badFib(20); // This gets exponentially longer to run as you surpass 35 and into 40
+print badFib(30); // This gets exponentially longer to run as you surpass 35 and into 40
 elapsed_time = clock() - start_time;
 print elapsed_time; print " seconds.";
 
