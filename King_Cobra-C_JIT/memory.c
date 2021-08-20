@@ -42,11 +42,13 @@ void markObject(Obj* object) {
     if (object == NULL) return;
     if (object->isMarked) return;
 
+    
     #ifdef DEBUG_LOG_GC
         printf("%p mark ", (void*)object);
         printValue(OBJ_VAL(object));
         printf("\n");
     #endif
+    
 
     object->isMarked = true;
 
@@ -55,9 +57,9 @@ void markObject(Obj* object) {
         vm.grayStack = (Obj**)realloc(vm.grayStack, sizeof(Obj*) * vm.grayCapacity);
     }
 
-    vm.grayStack[vm.grayCount++] = object;
-
     if (vm.grayStack == NULL) exit(1);
+
+    vm.grayStack[vm.grayCount++] = object;
 }
 
 void markValue(Value value) {
@@ -71,16 +73,25 @@ static void markArray(ValueArray* array) {
 }
 
 static void blackenObject(Obj* object) {
+    
     #ifdef DEBUG_LOG_GC
         printf("%p blacken ", (void*)object);
         printValue(OBJ_VAL(object));
         printf("\n");
     #endif
+    
 
     switch (object->type) {
+        case OBJ_BOUND_METHOD: {
+            ObjBoundMethod* bound = (ObjBoundMethod*)object;
+            markValue(bound->receiver);
+            markObject((Obj*)bound->method);
+            break;
+        }
         case OBJ_CLASS: {
             ObjClass* Class = (ObjClass*)object;
             markObject((Obj*)Class->name);
+            markTable(&Class->methods);
             break;
         }
         case OBJ_CLOSURE: {
@@ -117,12 +128,20 @@ static void blackenObject(Obj* object) {
  * Frees a singular object node from the linked list in memory.
 */
 static void freeObject(Obj* object) {
+    /*
     #ifdef DEBUG_LOG_GC
         printf("%p free type %d\n", (void*)object, object->type);
     #endif
-
+    */
+   
     switch(object->type) {
+        case OBJ_BOUND_METHOD: {
+            FREE(ObjBoundMethod, object);
+            break;
+        }
         case OBJ_CLASS: {
+            ObjClass* Class = (ObjClass*)object;
+            freeTable(&Class->methods);
             FREE(ObjClass, object);
             break;
         } 
@@ -178,6 +197,7 @@ static void markRoots() {
 
     markTable(&vm.globals);
     markCompilerRoots();
+    markObject((Obj*)vm.initString);
 }
 
 static void traceReferences() {
@@ -212,10 +232,12 @@ static void sweep() {
 }
 
 void collectGarbage() {
+    
     #ifdef DEBUG_LOG_GC
         printf("-- gc begin\n");
         size_t before = vm.bytesAllocated;
     #endif
+    
 
     markRoots();
     traceReferences();
@@ -224,12 +246,14 @@ void collectGarbage() {
 
     vm.nextGC = vm.bytesAllocated * GC_HEAP_GROW_FACTOR;
 
+    
     #ifdef DEBUG_LOG_GC
         printf("-- gc end\n");
         printf("   collected %zu bytes (from %zu to %zu) next at %zu\n",
         before - vm.bytesAllocated, before, vm.bytesAllocated,
         vm.nextGC);
     #endif
+    
 }
 
 /**

@@ -70,6 +70,8 @@ typedef struct {
 
 typedef enum {
     TYPE_FUNCTION,
+    TYPE_INITIALIZER,
+    TYPE_METHOD,
     TYPE_SCRIPT
 } FunctionType;
 
@@ -83,6 +85,11 @@ typedef struct Compiler {
     Upvalue upvalues[UINT8_COUNT];
     int scopeDepth;
 } Compiler;
+
+typedef struct ClassCompiler {
+    struct ClassCompiler* enclosing;
+    bool hasSuperclass;
+} ClassCompiler;
 
 /** 
  * Function prototypes for all methods.
@@ -139,7 +146,7 @@ static void statement();
 
 Parser parser;
 Compiler* current = NULL;
-Chunk* compilingChunk;
+ClassCompiler* currentClass = NULL;
 
 /**
  * Returns the current chunk that is being compiled.
@@ -266,7 +273,12 @@ static int emitJump(uint8_t instruction) {
  * Return instruction opcode.
 */
 static void emitReturn() {
-    emitByte(OP_NULL);
+    if (current->type == TYPE_INITIALIZER) {
+        emitBytes(OP_GET_LOCAL, 0);
+    } 
+    else {
+        emitByte(OP_NULL);
+    }
     emitByte(OP_RETURN);
 }
 
@@ -308,6 +320,7 @@ static void patchJump(int offset) {
 static void initCompiler(Compiler* compiler, FunctionType type) {
     compiler->enclosing = current;
     compiler->function = NULL;
+    compiler->type = type;
     compiler->localCount = 0;
     compiler->scopeDepth = 0;
     compiler->function = newFunction();
@@ -319,8 +332,14 @@ static void initCompiler(Compiler* compiler, FunctionType type) {
     Local* local = &current->locals[current->localCount++];
     local->depth = 0;
     local->isCaptured = false;
-    local->name.start = "";
-    local->name.length = 0;
+    if (type != TYPE_FUNCTION) {
+        local->name.start = "this";
+        local->name.length = 4;
+    } 
+    else {
+        local->name.start = "";
+        local->name.length = 0;
+    }
 }
 
 /**
@@ -330,12 +349,13 @@ static ObjFunction* endCompiler() {
     emitReturn();
     ObjFunction* function = current->function;
     // This is only for printing out chunks
+    
     #ifdef DEBUG_PRINT_CODE
     if (!parser.hadError) {
         disassembleChunk(currentChunk(), function->name != NULL ? function->name->chars : "<script>");
     }
     #endif
-
+    
     current = current->enclosing;
     return function;
 }
@@ -399,8 +419,8 @@ static int addUpvalue(Compiler* compiler, uint8_t index, bool isLocal) {
         return 0;
     }
 
-    compiler->upvalues[upvalueCount].isLocal = isLocal;
     compiler->upvalues[upvalueCount].index = index;
+    compiler->upvalues[upvalueCount].isLocal = isLocal;
     return compiler->function->upvalueCount++;
 }
 
@@ -428,6 +448,7 @@ static void addLocal(Token name) {
     // Or a drop easy solution would be to use UINT32 (4 bytes) or some large value that will be highly unlikely to be acheived, like UINT64 (8 bytes)
     if (current->localCount == UINT8_COUNT) {
         error("Too many local variables in function.");
+        return;
     }
 
     Local* local = &current->locals[current->localCount++];
@@ -546,7 +567,12 @@ static void dot(bool canAssign) {
     if (canAssign && match(TOKEN_EQUAL)) {
         expression();
         emitBytes(OP_SET_PROPERTY, name);
-    } 
+    }
+    else if (match(TOKEN_LEFT_PAREN)) {
+        uint8_t argCount = argumentList();
+        emitBytes(OP_INVOKE, name);
+        emitByte(argCount);
+    }
     else {
         emitBytes(OP_GET_PROPERTY, name);
     }
@@ -638,6 +664,46 @@ static void variable(bool canAssign) {
     namedVariable(parser.previous, canAssign);
 }
 
+static Token syntheticToken(const char* text) {
+    Token token;
+    token.start = text;
+    token.length = (int)strlen(text);
+    return token;
+}
+
+static void super_(bool canAssign) {
+    if (currentClass == NULL) {
+        error("Can't use 'super' outside of a class.");
+    } 
+    else if (!currentClass->hasSuperclass) {
+        error("Can't use 'super' in a class without inheriting from a superclass.");
+    }
+
+    consume(TOKEN_DOT, "Expect '.' after 'super'.");
+    consume(TOKEN_IDENTIFIER, "Expect superclass method name.");
+    uint8_t name = identifierConstant(&parser.previous);
+
+    namedVariable(syntheticToken("this"), false);
+    if (match(TOKEN_LEFT_PAREN)) {
+        uint8_t argCount = argumentList();
+        namedVariable(syntheticToken("super"), false);
+        emitBytes(OP_SUPER_INVOKE, name);
+        emitByte(argCount);
+    } 
+    else {
+        namedVariable(syntheticToken("super"), false);
+        emitBytes(OP_GET_SUPER, name);
+    }
+}
+
+static void this_(bool canAssign) {
+    if (currentClass == NULL) {
+        error("Can't use the (keyword: 'this') outside of a class.");
+        return;
+    }
+    variable(false);
+} 
+
 /**
  * Unary operations are in-place logic operations, for example:
  * var x = -(x + y) * 2;
@@ -702,8 +768,8 @@ ParseRule rules[] = {
   [TOKEN_OR]            = {NULL,     or_,    PREC_OR},
   [TOKEN_PRINT]         = {NULL,     NULL,   PREC_NONE},
   [TOKEN_RETURN]        = {NULL,     NULL,   PREC_NONE},
-  [TOKEN_SUPER]         = {NULL,     NULL,   PREC_NONE},
-  [TOKEN_THIS]          = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_SUPER]         = {super_,   NULL,   PREC_NONE},
+  [TOKEN_THIS]          = {this_,    NULL,   PREC_NONE},
   [TOKEN_TRUE]          = {literal,  NULL,   PREC_NONE},
   [TOKEN_VAR]           = {NULL,     NULL,   PREC_NONE},
   [TOKEN_WHILE]         = {NULL,     NULL,   PREC_NONE},
@@ -788,16 +854,69 @@ static void function(FunctionType type) {
     }
 }
 
+static void method() {
+    consume(TOKEN_IDENTIFIER, "Expect method name.");
+    uint8_t constant = identifierConstant(&parser.previous);
+
+    FunctionType type = TYPE_METHOD;
+    if (parser.previous.length == 4 && memcmp(parser.previous.start, "init", 4) == 0) {
+        type = TYPE_INITIALIZER;
+    }
+
+    function(type);
+    emitBytes(OP_METHOD, constant);
+}
+
 static void classDeclaration() {
     consume(TOKEN_IDENTIFIER, "Expect class name.");
+    Token className = parser.previous;
     uint8_t nameConstant = identifierConstant(&parser.previous);
     declareVariable();
 
     emitBytes(OP_CLASS, nameConstant);
     defineVariable(nameConstant);
 
+    ClassCompiler classCompiler;
+    classCompiler.hasSuperclass = false;
+    classCompiler.enclosing = currentClass;
+    currentClass = &classCompiler;
+
+    // Going to do this python style and make it detect an open and closed parenthesis
+    //if (match(TOKEN_LEFT_PAREN)) {
+    if (match(TOKEN_LESS)) {
+        consume(TOKEN_IDENTIFIER, "Expect superclass name to inherit from.");
+        variable(false);
+
+        if (identifiersEqual(&className, &parser.previous)) {
+            error("A class can't inherit from itself.");
+        }
+
+        beginScope();
+        addLocal(syntheticToken("super"));
+        defineVariable(0);
+
+        namedVariable(className, false);
+        //consume(TOKEN_RIGHT_PAREN, "Expected closing ')' parenthesis for declaring superclass for inheritance.");
+        emitByte(OP_INHERIT);
+        classCompiler.hasSuperclass = true;
+    }
+    //else if(match(TOKEN_RIGHT_PAREN)) {
+        //error("Superclass inheritance is undefined and no preceding '(' parenthesis can be found in class expression.");
+    //}
+
+    namedVariable(className, false);
     consume(TOKEN_LEFT_BRACE, "Expect '{' before class body.");
+    while (!check(TOKEN_RIGHT_BRACE) && !check(TOKEN_EOF)) {
+        method();
+    }
     consume(TOKEN_RIGHT_BRACE, "Expect '}' after class body.");
+    emitByte(OP_POP);
+
+    if (classCompiler.hasSuperclass) {
+        endScope();
+    }
+
+    currentClass = currentClass->enclosing;
 }
 
 static void functionDeclaration() {
@@ -916,6 +1035,10 @@ static void returnStatement() {
         emitReturn();
     }
     else {
+        if (current->type == TYPE_INITIALIZER) {
+            error("Can't return a value from an initializer.");
+        }
+        
         expression();
         consume(TOKEN_SEMICOLON, "Expect ';' after return value.");
         emitByte(OP_RETURN);

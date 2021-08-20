@@ -1,7 +1,15 @@
-// Classes, finally
-class Fruit{}
+class Doughnut {
+  cook() {
+    print "Dunk in the fryer.";
+  }
+}
 
-var apple = Fruit();
-apple.shape = "hearty"; // Like python, you can litterally create new class elements by using an assignment operator
+//class Cruller < Doughnut {
+class Cruller (Doughnut) {
+  finish() {
+    print "Glaze with icing.";
+  }
+}
 
-print(apple.shape);
+var x = Cruller();
+x.finish();

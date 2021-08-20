@@ -21,13 +21,21 @@ static Obj* allocateObject(size_t size, ObjType type) {
     #ifdef DEBUG_LOG_GC
         printf("%p allocate %zu for %d\n", (void*)object, size, type);
     #endif
-
+    
     return object;
+}
+
+ObjBoundMethod* newBoundMethod(Value receiver, ObjClosure* method) {
+    ObjBoundMethod* bound = ALLOCATE_OBJ(ObjBoundMethod, OBJ_BOUND_METHOD);
+    bound->receiver = receiver;
+    bound->method = method;
+    return bound;
 }
 
 ObjClass* newClass(ObjString* name) {
     ObjClass* Class = ALLOCATE_OBJ(ObjClass, OBJ_CLASS);
-    Class->name = name; 
+    Class->name = name;
+    initTable(&Class->methods); 
     return Class;
 }
 
@@ -131,6 +139,9 @@ static void printFunction(ObjFunction* function) {
 
 void printObject(Value value) {
     switch(OBJ_TYPE(value)) {
+        case OBJ_BOUND_METHOD:
+            printFunction(AS_BOUND_METHOD(value)->method->function);
+            break;
         case OBJ_CLASS:
             printf("%s", AS_CLASS(value)->name->chars);
             break;
