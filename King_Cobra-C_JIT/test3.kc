@@ -1,0 +1,35 @@
+// These are revised syntaxes that I had time to implement
+// albeit minor, they're still more pythonic than the C-like parameter format.
+if 20 > 3 {
+	print "20 > 3 True?";
+}
+var x  = 20;
+
+if x > 3 print "x > 3 True";
+else if 3 > 4 print "This is mathematically False";
+
+if x == 20 {
+	print "x == 20";
+}
+else {
+	print "x != 20";
+}
+	
+print x;
+
+while (x >= 2) {
+	print x;
+	x = x - 1;
+}
+
+x = 20;
+
+while x >= 2 {
+	print x;
+	print "Second Loop";
+	x = x - 1;
+}
+
+for (var i = 0; i < 200; i= i + 1) {
+	print "This is a for loop";
+}

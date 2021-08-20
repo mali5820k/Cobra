@@ -38,7 +38,7 @@ void freeTable(Table* table) {
  * collision handling.
 */
 static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
-    uint32_t index = key->hash % capacity;
+    uint32_t index = key->hash & (capacity - 1);
     Entry* tombstone = NULL;
     // Linear probing is handled with the assignment of a new index.
     // The probing will wrap around to the start of the hash table due
@@ -57,8 +57,7 @@ static Entry* findEntry(Entry* entries, int capacity, ObjString* key) {
             return entry;
         }
         
-        // See if this line was missing:
-        index = (index + 1) % capacity;
+        index = (index + 1) & (capacity - 1);
     }
 }
 
@@ -160,7 +159,7 @@ void tableAddAll(Table* from, Table* to) {
 ObjString* tableFindString(Table* table, const char* chars, int length, uint32_t hash) {
     if(table->count == 0) return NULL;
 
-    uint32_t index = hash % table->capacity;
+    uint32_t index = hash & (table->capacity - 1);
 
     for(;;) {
         Entry* entry = &table->entries[index];
@@ -170,7 +169,7 @@ ObjString* tableFindString(Table* table, const char* chars, int length, uint32_t
         else if(entry->key->length == length && entry->key->hash == hash && memcmp(entry->key->chars, chars, length) == 0) {
             return entry->key;
         }
-        index = (index + 1) % table->capacity;
+        index = (index + 1) & (table->capacity - 1);
     }
 }
 

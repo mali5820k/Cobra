@@ -349,13 +349,13 @@ static ObjFunction* endCompiler() {
     emitReturn();
     ObjFunction* function = current->function;
     // This is only for printing out chunks
-    
+    /*
     #ifdef DEBUG_PRINT_CODE
     if (!parser.hadError) {
         disassembleChunk(currentChunk(), function->name != NULL ? function->name->chars : "<script>");
     }
     #endif
-    
+    */
     current = current->enclosing;
     return function;
 }
@@ -882,8 +882,7 @@ static void classDeclaration() {
     currentClass = &classCompiler;
 
     // Going to do this python style and make it detect an open and closed parenthesis
-    //if (match(TOKEN_LEFT_PAREN)) {
-    if (match(TOKEN_LESS)) {
+    if (match(TOKEN_LEFT_PAREN)) {
         consume(TOKEN_IDENTIFIER, "Expect superclass name to inherit from.");
         variable(false);
 
@@ -896,13 +895,10 @@ static void classDeclaration() {
         defineVariable(0);
 
         namedVariable(className, false);
-        //consume(TOKEN_RIGHT_PAREN, "Expected closing ')' parenthesis for declaring superclass for inheritance.");
+        consume(TOKEN_RIGHT_PAREN, "Expected closing ')' parenthesis for declaring superclass for inheritance.");
         emitByte(OP_INHERIT);
         classCompiler.hasSuperclass = true;
     }
-    //else if(match(TOKEN_RIGHT_PAREN)) {
-        //error("Superclass inheritance is undefined and no preceding '(' parenthesis can be found in class expression.");
-    //}
 
     namedVariable(className, false);
     consume(TOKEN_LEFT_BRACE, "Expect '{' before class body.");
@@ -999,11 +995,11 @@ static void forStatement() {
 
 static void ifStatement() {
     // A way to really make this multi-functional would be to have a switch-case statement like we do for statement() and vm.c's run()
-    // that way, we can have multiple ways to write an if statement, even the one like python
-    consume(TOKEN_LEFT_PAREN, "Expect '(' after 'if'");
-    expression();
-    consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
+    // that way, we can have multiple ways to write an if statement, even the one like python}
 
+    //consume(TOKEN_LEFT_PAREN, "Expect '(' after 'if'");
+    expression();
+    //consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
     int thenJump = emitJump(OP_JUMP_IF_FALSE);
     emitByte(OP_POP);
     statement();
@@ -1047,9 +1043,9 @@ static void returnStatement() {
 
 static void whileStatement() {
     int loopStart = currentChunk()->count;
-    consume(TOKEN_LEFT_PAREN, "Expect '(' after 'while'.");
+    //consume(TOKEN_LEFT_PAREN, "Expect '(' after 'while'.");
     expression();
-    consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
+    //consume(TOKEN_RIGHT_PAREN, "Expect ')' after condition.");
 
     int exitJump = emitJump(OP_JUMP_IF_FALSE);
     emitByte(OP_POP);

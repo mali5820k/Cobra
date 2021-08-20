@@ -1,15 +1,34 @@
-class Doughnut {
-  cook() {
-    print "Dunk in the fryer.";
-  }
+// Parent Class
+class car {
+	init(year) {
+		this.year = year;
+	}
+	
+	printSpecs() {
+		print "Car: " + this.year;
+	}
+	
 }
 
-//class Cruller < Doughnut {
-class Cruller (Doughnut) {
-  finish() {
-    print "Glaze with icing.";
-  }
+// Child class that inherits from car.
+// There is direct inheritance (think of 'extends' if you're a java programmer)
+class tesla (car){
+	init(year, name, model){
+		super.init(year);
+		this.name = name;
+		this.model = model;
+	}
+	
+	printSpecs() {
+		print "Tesla Brand: " + this.year+ ", " + this.name+ ", " + this.model;
+	}
+	
 }
 
-var x = Cruller();
-x.finish();
+var x = car("2003");
+var y = tesla("2021", "Tesla", "P100");
+var z = y.printSpecs;
+x.printSpecs();
+y.printSpecs();
+z(); // Need to use parenthesis as shown to run the function.
+

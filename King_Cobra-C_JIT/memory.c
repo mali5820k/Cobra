@@ -42,13 +42,13 @@ void markObject(Obj* object) {
     if (object == NULL) return;
     if (object->isMarked) return;
 
-    
+    /*
     #ifdef DEBUG_LOG_GC
         printf("%p mark ", (void*)object);
         printValue(OBJ_VAL(object));
         printf("\n");
     #endif
-    
+    */
 
     object->isMarked = true;
 
@@ -73,13 +73,13 @@ static void markArray(ValueArray* array) {
 }
 
 static void blackenObject(Obj* object) {
-    
+    /*
     #ifdef DEBUG_LOG_GC
         printf("%p blacken ", (void*)object);
         printValue(OBJ_VAL(object));
         printf("\n");
     #endif
-    
+    */
 
     switch (object->type) {
         case OBJ_BOUND_METHOD: {
@@ -233,11 +233,12 @@ static void sweep() {
 
 void collectGarbage() {
     
+    /*
     #ifdef DEBUG_LOG_GC
         printf("-- gc begin\n");
         size_t before = vm.bytesAllocated;
     #endif
-    
+    */
 
     markRoots();
     traceReferences();
@@ -246,14 +247,12 @@ void collectGarbage() {
 
     vm.nextGC = vm.bytesAllocated * GC_HEAP_GROW_FACTOR;
 
-    
+    /*
     #ifdef DEBUG_LOG_GC
         printf("-- gc end\n");
-        printf("   collected %zu bytes (from %zu to %zu) next at %zu\n",
-        before - vm.bytesAllocated, before, vm.bytesAllocated,
-        vm.nextGC);
+        printf("   collected %zu bytes (from %zu to %zu) next at %zu\n", before - vm.bytesAllocated, before, vm.bytesAllocated, vm.nextGC);
     #endif
-    
+    */
 }
 
 /**

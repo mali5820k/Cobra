@@ -97,9 +97,3 @@ start_time = clock();
 print badFib(30); // This gets exponentially longer to run as you surpass 35 and into 40
 elapsed_time = clock() - start_time;
 print elapsed_time; print " seconds.";
-
-
-
-
-// More features will be added here as the feature list grows.
-// Functions will be coming soon
