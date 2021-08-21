@@ -22,7 +22,7 @@ For those who think I'm mistaken about the language being compiled when I'm read
 - Finally, you can type away in the program once you have launched it.
 
 ### For Mac OS users:
-- I haven't tested anything with Macs as I don't own one. I do know that Macs have Clang pre-installed and it's closest in terms of functionality to Linux as it's Unix-based, so you might be able to run the included make file after some tweaks or the python compile file and have the program compile to an executable binary.
+- I haven't tested anything with Macs as I don't own one. I do know that Macs have Clang pre-installed and it's closest in terms of functionality to Linux as it's Unix-based, so you might be able to run the included make file after some tweaks or can edit the python compile file, to add mac compilation support, and have the program compile to an executable binary.
 - I still recommend Mac users try to acquire GCC in some way as Clang has resulted in strange issues from build to build that weren't present in GCC.
 
 ### For Linux users:
