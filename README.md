@@ -1,7 +1,7 @@
 # King Cobra
 ### Project Goals/Focus:
   - A programming language inspired from Python's simplicity and C/C++'s speed.
-  - The language itself is going to be compiler-based with focus on portability via a VM (low-level Virtual Machine). The focus of this project is to implement KC entirely with the help of "Crafting Interpreters" by Robert (Bob) Nystrom, and then to implement modern features to make KC a language that I would use. If time becomes scarce, then I'll simply leave the project as a learning experience. Please check out the P.S. section for more details on licensing and potential future plans.
+  - The language itself is going to be compiler-based with focus on portability via a VM (low-level Virtual Machine). The focus of this project is to implement KC entirely with the help of "Crafting Interpreters" by Robert (Bob) Nystrom, and then to implement modern features to make KC a language that I would use. ***If time becomes scarce or my motivation to work on this language changes, then I'll simply leave the project as a learning experience.*** Please check out the P.S. section for more details on licensing and potential future plans.
 
 Again, this is an ongoing project that is based off of interest in compiled languages.
 The book I am actively reading to accomplish this project is "Crafting Interpreters" by Bob Nystrom which he has made publicly available at: https://craftinginterpreters.com/
