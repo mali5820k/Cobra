@@ -142,7 +142,7 @@ static void printStatement();
 static void whileStatement();
 static void synchronize();
 static void declaration();
-static void statement();
+static void statement(int *jumpPatch);
 
 Parser parser;
 Compiler* current = NULL;
@@ -995,11 +995,12 @@ static void forStatement() {
         loopStart = incrementStart;
         patchJump(bodyJump);
     }
-    if (match(TOKEN_BREAK)) {
+    if (match(TOKEN_BREAK && exitJump == -1)) {
         consume(TOKEN_BREAK, "Can't consume break statement.");
         consume(TOKEN_SEMICOLON, "EXPECT ';' after break statement.");
         breakJump = emitJump(OP_JUMP);
     }
+    
     statement();
     emitLoop(loopStart);
 
@@ -1133,9 +1134,8 @@ static void declaration() {
 
 /**
  * Compiles statements.
- * Return -1 if there isn't a value to return, otherwise, return the breakStatement's offset.
 */
-static void statement() {
+static void statement(int *jumpPatch) {
     if (match(TOKEN_PRINT)) {
         printStatement();
     }
@@ -1157,6 +1157,7 @@ static void statement() {
         endScope();
     }
     else if (match(TOKEN_BREAK)) {
+        return breakStatement(jumpPatch);
     }
     else {
         expressionStatement();
