@@ -30,9 +30,13 @@ typedef enum {
     OP_LESS_EQUAL,    // once the required instructions are tested
     OP_NOT_EQUAL,       // fully functional
     OP_ADD,
+    OP_ADD_EQUALS,
     OP_SUBTRACT,
+    OP_SUBTRACT_EQUALS,
     OP_MULTIPLY,
+    OP_MULTIPLY_EQUALS,
     OP_DIVIDE,
+    OP_DIVIDE_EQUALS,
     OP_NOT,
     OP_NEGATE,
     OP_PRINT,

@@ -553,6 +553,37 @@ static void binary(bool canAssign) {
         case TOKEN_MINUS:           emitByte(OP_SUBTRACT); break;
         case TOKEN_STAR:            emitByte(OP_MULTIPLY); break;
         case TOKEN_SLASH:           emitByte(OP_DIVIDE); break;
+        case TOKEN_SLASH_EQUAL: {
+            /**
+             * @brief static void namedVariable(Token name, bool canAssign) {
+    uint8_t getOp, setOp;
+    int arg = resolveLocal(current, &name);
+    if (arg != -1) {
+        getOp = OP_GET_LOCAL;
+        setOp = OP_SET_LOCAL;
+    }
+    else if ((arg = resolveUpvalue(current, &name)) != -1) {
+        getOp = OP_GET_UPVALUE;
+        setOp = OP_SET_UPVALUE; 
+    }
+    else {
+        arg = identifierConstant(&name);
+        getOp = OP_GET_GLOBAL;
+        setOp = OP_SET_GLOBAL;
+    }
+
+    if (canAssign && match(TOKEN_EQUAL)) {
+        expression();
+        emitBytes(setOp, (uint8_t)arg);
+    }
+    else {
+        emitBytes(getOp, (uint8_t)arg);
+    }
+}
+             * 
+             */
+            break;
+        }
         default:
             return; // Shouldn't reach this part ever!
     }
@@ -745,10 +776,14 @@ ParseRule rules[] = {
   [TOKEN_COMMA]         = {NULL,     NULL,   PREC_NONE},
   [TOKEN_DOT]           = {NULL,     dot,    PREC_CALL},
   [TOKEN_MINUS]         = {unary,    binary, PREC_TERM},
+  [TOKEN_MINUS_EQUAL]   = {NULL,     binary,   PREC_TERM},
   [TOKEN_PLUS]          = {NULL,     binary, PREC_TERM},
+  [TOKEN_PLUS_EQUAL]    = {NULL,     binary,   PREC_TERM},
   [TOKEN_SEMICOLON]     = {NULL,     NULL,   PREC_NONE},
   [TOKEN_SLASH]         = {NULL,     binary, PREC_FACTOR},
+  [TOKEN_SLASH_EQUAL]   = {NULL,     binary, PREC_FACTOR},
   [TOKEN_STAR]          = {NULL,     binary, PREC_FACTOR},
+  [TOKEN_SLASH_EQUAL]   = {NULL,     binary, PREC_FACTOR},
   [TOKEN_BANG]          = {unary,    NULL,   PREC_NONE},
   [TOKEN_BANG_EQUAL]    = {NULL,     binary, PREC_EQUALITY},
   [TOKEN_EQUAL]         = {NULL,     NULL,   PREC_NONE},

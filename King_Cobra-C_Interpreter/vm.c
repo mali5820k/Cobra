@@ -287,9 +287,23 @@ static InterpretResult run() {
                 }
                 break;
             }
+            case OP_ADD_EQUALS: {
+
+                break;
+            }
             case OP_SUBTRACT:   BINARY_OP(NUMBER_VAL, -); break;
+            case OP_SUBTRACT_EQUALS: {
+
+                break;
+            }
             case OP_MULTIPLY:   BINARY_OP(NUMBER_VAL, *); break;
+            case OP_MULTIPLY_EQUALS: {
+                break;
+            }
             case OP_DIVIDE:     BINARY_OP(NUMBER_VAL, /); break;
+            case OP_DIVIDE_EQUALS: {
+                break;
+            }
             case OP_NOT:        push(BOOL_VAL(isFalsey(pop()))); break;
             case OP_NEGATE: {
                 // Read the value on top of the stack and check to see if it is a number,
