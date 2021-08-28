@@ -113,7 +113,7 @@ static TokenType checkKeyword(int start, int length, const char* rest, TokenType
 static TokenType identifierType() {
     switch(scanner.start[0]) {
         case 'a': return checkKeyword(1, 2, "nd", TOKEN_AND);
-        case 'b': return checkKeyword(1, 4, "reak", TOKEN_BREAK); // Implement this later
+        //case 'b': return checkKeyword(1, 4, "reak", TOKEN_BREAK); // Implement this later
         case 'c': return checkKeyword(1, 4, "lass", TOKEN_CLASS);
         //case 'd': return checkKeyword(1, 2, "ef", TOKEN_FUNCTION); // for def use as a function declaration keyword
         case 'e': return checkKeyword(1, 3, "lse", TOKEN_ELSE);

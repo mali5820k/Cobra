@@ -588,7 +588,6 @@ static void literal(bool canAssign) {
         case TOKEN_FALSE: emitByte(OP_FALSE); break;
         case TOKEN_NULL: emitByte(OP_NULL); break;
         case TOKEN_TRUE: emitByte(OP_TRUE); break;
-        case TOKEN_BREAK: emitByte(OP_JUMP); break;
         default: return;
     }
 }
@@ -768,7 +767,6 @@ ParseRule rules[] = {
   [TOKEN_NULL]          = {literal,  NULL,   PREC_NONE},
   [TOKEN_OR]            = {NULL,     or_,    PREC_OR},
   [TOKEN_PRINT]         = {NULL,     NULL,   PREC_NONE},
-  [TOKEN_BREAK]         = {literal,  NULL,   PREC_NONE},
   [TOKEN_RETURN]        = {NULL,     NULL,   PREC_NONE},
   [TOKEN_SUPER]         = {super_,   NULL,   PREC_NONE},
   [TOKEN_THIS]          = {this_,    NULL,   PREC_NONE},
@@ -953,10 +951,6 @@ static void expressionStatement() {
 
 static void forStatement() {
     beginScope();
-    /**
-     * x condition of for loop:
-     * for (x; y; z) {}
-    */
     consume(TOKEN_LEFT_PAREN, "Expect '(' after 'for'.");
     if (match(TOKEN_SEMICOLON)) {} // This is one of those infinite loop conditions or no variable declared
     else if (match(TOKEN_VAR)) {
@@ -968,11 +962,6 @@ static void forStatement() {
 
     int loopStart = currentChunk()->count;
     int exitJump = -1;
-    int breakJump = -1;
-    /**
-     * y condition of for loop:
-     * for (x; y; z) {}
-    */
     if (!match(TOKEN_SEMICOLON)) {
         expression();
         consume(TOKEN_SEMICOLON, "Expect ';' after loop condition.");
@@ -981,40 +970,24 @@ static void forStatement() {
         emitByte(OP_POP);
     }
 
-    /**
-     * z condition of for loop:
-     * for (x; y; z) {}
-    */
-    if (!match(TOKEN_LEFT_BRACE)) {
+    if (!match(TOKEN_RIGHT_PAREN)) {
         int bodyJump = emitJump(OP_JUMP);
         int incrementStart = currentChunk()->count;
         expression();
         emitByte(OP_POP);
         consume(TOKEN_RIGHT_PAREN, "Expect ')' after for clauses.");
-        //consume(TOKEN_LEFT_BRACE, "Expect '{' after for loop conditions.");
 
         emitLoop(loopStart);
         loopStart = incrementStart;
         patchJump(bodyJump);
     }
 
-    // Check for break statement:
-    if(match(TOKEN_BREAK)) {
-        breakJump = emitJump(OP_JUMP);
-    }
-    else {
-        statement();
-        emitLoop(loopStart);
-    }
-    
+    statement();
+    emitLoop(loopStart);
 
     if (exitJump != -1) {
         patchJump(exitJump);
         emitByte(OP_POP);
-    }
-    else if(breakJump != -1) {
-        patchJump(breakJump);
-        //emitByte(OP_POP); // Maybe not needed
     }
 
     endScope();
@@ -1076,13 +1049,10 @@ static void whileStatement() {
 
     int exitJump = emitJump(OP_JUMP_IF_FALSE);
     emitByte(OP_POP);
-
     statement();
-
     emitLoop(loopStart);
 
     patchJump(exitJump);
-
     emitByte(OP_POP);
 }
 
@@ -1137,7 +1107,6 @@ static void declaration() {
 
 /**
  * Compiles statements.
- * Return 0 if there isn't a value to return, otherwise, return the breakStatement's offset.
 */
 static void statement() {
     if (match(TOKEN_PRINT)) {
