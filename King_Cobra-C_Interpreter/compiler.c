@@ -588,7 +588,6 @@ static void literal(bool canAssign) {
         case TOKEN_FALSE: emitByte(OP_FALSE); break;
         case TOKEN_NULL: emitByte(OP_NULL); break;
         case TOKEN_TRUE: emitByte(OP_TRUE); break;
-        case TOKEN_BREAK: emitByte(OP_JUMP); break;
         default: return;
     }
 }
@@ -768,7 +767,7 @@ ParseRule rules[] = {
   [TOKEN_NULL]          = {literal,  NULL,   PREC_NONE},
   [TOKEN_OR]            = {NULL,     or_,    PREC_OR},
   [TOKEN_PRINT]         = {NULL,     NULL,   PREC_NONE},
-  [TOKEN_BREAK]         = {literal,  NULL,   PREC_NONE},
+  [TOKEN_BREAK]         = {NULL,     NULL,   PREC_NONE},
   [TOKEN_RETURN]        = {NULL,     NULL,   PREC_NONE},
   [TOKEN_SUPER]         = {super_,   NULL,   PREC_NONE},
   [TOKEN_THIS]          = {this_,    NULL,   PREC_NONE},
@@ -991,30 +990,27 @@ static void forStatement() {
         expression();
         emitByte(OP_POP);
         consume(TOKEN_RIGHT_PAREN, "Expect ')' after for clauses.");
-        //consume(TOKEN_LEFT_BRACE, "Expect '{' after for loop conditions.");
 
         emitLoop(loopStart);
         loopStart = incrementStart;
         patchJump(bodyJump);
     }
-
-    // Check for break statement:
-    if(match(TOKEN_BREAK)) {
+    if (match(TOKEN_BREAK)) {
+        consume(TOKEN_BREAK, "Can't consume break statement.");
+        consume(TOKEN_SEMICOLON, "EXPECT ';' after break statement.");
         breakJump = emitJump(OP_JUMP);
     }
-    else {
-        statement();
-        emitLoop(loopStart);
+    statement();
+    emitLoop(loopStart);
+
+    if (breakJump != -1) {
+        patchJump(breakJump);
+        
     }
-    
 
     if (exitJump != -1) {
         patchJump(exitJump);
         emitByte(OP_POP);
-    }
-    else if(breakJump != -1) {
-        patchJump(breakJump);
-        //emitByte(OP_POP); // Maybe not needed
     }
 
     endScope();
@@ -1137,7 +1133,7 @@ static void declaration() {
 
 /**
  * Compiles statements.
- * Return 0 if there isn't a value to return, otherwise, return the breakStatement's offset.
+ * Return -1 if there isn't a value to return, otherwise, return the breakStatement's offset.
 */
 static void statement() {
     if (match(TOKEN_PRINT)) {
@@ -1159,6 +1155,8 @@ static void statement() {
         beginScope();
         block();
         endScope();
+    }
+    else if (match(TOKEN_BREAK)) {
     }
     else {
         expressionStatement();
