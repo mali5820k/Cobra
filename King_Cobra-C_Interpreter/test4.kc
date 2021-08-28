@@ -1,10 +1,63 @@
-for (var x = 0; x < 10; x = x + 1) {
-
-    print x;
-    if x == 8 {
-        print "before break";
-        break;
+func test1 () {
+    for (var x = 0; x < 10; x = x + 1) {
+        print x;
+        if x == 8 {
+            print "before break";
+            break;
+        }
     }
+    
+    print "success";    
 }
 
-print "success";
+func test2 () {
+    var x = -123;
+    while x < 10 {
+        break;
+        print "Shouldn't be able to get to this line if break works";
+    }
+    
+    print "success 2";
+}
+
+func test3 () {
+    for (var i = 0; i < 10; i = i + 1) {
+        for (var j = 0; i < 10; i = i + 1) { 
+            print i + j;
+            if i == 5 and j == 4 {
+                break;
+            }
+        }
+        if i == 5 and j == 4 {
+            break;
+        }
+    }
+
+    print "success 3";
+}
+
+func test4 () {
+    var i = 0;
+    var j = 0;
+
+    while (i < 10) {
+        while (j < 10) { 
+            print i + j;
+            if i == 5 and j == 4 {
+                break;
+            }
+            j = j + 1;
+        }
+        if i == 5 and j == 4 {
+            break;
+        }
+        i = i + 1;
+    }
+
+    print "success 4";
+}
+
+test1();
+test2();
+test3();
+test4();

@@ -20,7 +20,7 @@ typedef struct {
     Token previous;
     bool hadError;
     bool panicMode; // Since we don't have exceptions in C, we need to have a panic mode incase of an error
-    bool inLoop;
+    int loopDepth;
 } Parser;
 
 /**
@@ -952,7 +952,7 @@ static void expressionStatement() {
 
 static void breakStatement() {
     // Just check if we're inside of a loop and consume the token
-    if(!parser.inLoop) {
+    if(parser.loopDepth < 1) {
         error("ERROR: Can only use break statements inside of loops.");
     }
     else {
@@ -962,7 +962,7 @@ static void breakStatement() {
 }
 
 static void forStatement() {
-    parser.inLoop = true;
+    parser.loopDepth += 1;
     beginScope();
     consume(TOKEN_LEFT_PAREN, "Expect '(' after 'for'.");
     if (match(TOKEN_SEMICOLON)) {} // This is one of those infinite loop conditions or no variable declared
@@ -1009,7 +1009,7 @@ static void forStatement() {
     }
 
     endScope();
-    parser.inLoop = false;
+    parser.loopDepth -= 1;
 }
 
 static void ifStatement() {
@@ -1061,6 +1061,8 @@ static void returnStatement() {
 }
 
 static void whileStatement() {
+    parser.loopDepth += 1;
+    breakJump = -1;
     int loopStart = currentChunk()->count;
     //consume(TOKEN_LEFT_PAREN, "Expect '(' after 'while'.");
     expression();
@@ -1072,7 +1074,11 @@ static void whileStatement() {
     emitLoop(loopStart);
 
     patchJump(exitJump);
+    if (breakJump != -1) {
+        patchJump(breakJump);
+    }
     emitByte(OP_POP);
+    parser.loopDepth -= 1;
 }
 
 /**
@@ -1168,6 +1174,7 @@ ObjFunction* compile(const char* source) {
 
     parser.hadError = false;
     parser.panicMode = false;
+    parser.loopDepth = 0;
 
     advance();
     
