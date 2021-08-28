@@ -1,0 +1,10 @@
+for (var x = 0; x < 10; x = x + 1) {
+
+    print x;
+    if x == 8 {
+        print "before break";
+        break;
+    }
+}
+
+print "success";

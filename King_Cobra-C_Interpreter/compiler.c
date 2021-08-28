@@ -20,6 +20,7 @@ typedef struct {
     Token previous;
     bool hadError;
     bool panicMode; // Since we don't have exceptions in C, we need to have a panic mode incase of an error
+    bool inLoop;
 } Parser;
 
 /**
@@ -147,7 +148,7 @@ static void statement();
 Parser parser;
 Compiler* current = NULL;
 ClassCompiler* currentClass = NULL;
-
+int breakJump = -1;
 /**
  * Returns the current chunk that is being compiled.
 */
@@ -949,7 +950,19 @@ static void expressionStatement() {
     emitByte(OP_POP);
 }
 
+static void breakStatement() {
+    // Just check if we're inside of a loop and consume the token
+    if(!parser.inLoop) {
+        error("ERROR: Can only use break statements inside of loops.");
+    }
+    else {
+        consume(TOKEN_SEMICOLON, "Expect ';' after break statement.");
+        breakJump = emitJump(OP_JUMP);
+    }
+}
+
 static void forStatement() {
+    parser.inLoop = true;
     beginScope();
     consume(TOKEN_LEFT_PAREN, "Expect '(' after 'for'.");
     if (match(TOKEN_SEMICOLON)) {} // This is one of those infinite loop conditions or no variable declared
@@ -962,6 +975,8 @@ static void forStatement() {
 
     int loopStart = currentChunk()->count;
     int exitJump = -1;
+    breakJump = -1;
+
     if (!match(TOKEN_SEMICOLON)) {
         expression();
         consume(TOKEN_SEMICOLON, "Expect ';' after loop condition.");
@@ -985,12 +1000,16 @@ static void forStatement() {
     statement();
     emitLoop(loopStart);
 
+    if (breakJump != -1) {
+        patchJump(breakJump);
+    }
     if (exitJump != -1) {
         patchJump(exitJump);
         emitByte(OP_POP);
     }
 
     endScope();
+    parser.inLoop = false;
 }
 
 static void ifStatement() {
@@ -1074,6 +1093,7 @@ static void synchronize() {
             case TOKEN_FOR:
             case TOKEN_IF:
             case TOKEN_WHILE:
+            case TOKEN_BREAK:
             case TOKEN_PRINT:
             case TOKEN_RETURN:
                 return;
@@ -1111,6 +1131,9 @@ static void declaration() {
 static void statement() {
     if (match(TOKEN_PRINT)) {
         printStatement();
+    }
+    else if (match(TOKEN_BREAK)) {
+        breakStatement();
     }
     else if (match(TOKEN_FOR)) {
         forStatement();
