@@ -539,14 +539,16 @@ static void binary(bool canAssign) {
     parsePrecedence((Precedence)(rule->precedence + 1));
 
     // Later will use OP_GREATER_EQUAL as well as OP_LESS_EQUAL
-    // for the OP codes of TOKEN_GREATER_LESS and TOKEN_LESS_EQUAL.
+    // for the OP codes of TOKEN_GREATER_EQUAL and TOKEN_LESS_EQUAL.
     switch(operatorType) {
         case TOKEN_BANG_EQUAL:      emitBytes(OP_EQUAL, OP_NOT); break;
         case TOKEN_EQUAL_EQUAL:     emitByte(OP_EQUAL); break;
         case TOKEN_GREATER:         emitByte(OP_GREATER); break;
-        case TOKEN_GREATER_EQUAL:   emitBytes(OP_LESS, OP_NOT); break; 
+        //case TOKEN_GREATER_EQUAL:   emitBytes(OP_LESS, OP_NOT); break; 
+        case TOKEN_GREATER_EQUAL:   emitByte(OP_GREATER_EQUAL); break; 
         case TOKEN_LESS:            emitByte(OP_LESS); break;
-        case TOKEN_LESS_EQUAL:      emitBytes(OP_GREATER_EQUAL, OP_NOT); break;
+        //case TOKEN_LESS_EQUAL:      emitBytes(OP_GREATER_EQUAL, OP_NOT); break;
+        case TOKEN_LESS_EQUAL:      emitByte(OP_LESS_EQUAL); break;
         case TOKEN_PLUS:            emitByte(OP_ADD); break;
         case TOKEN_MINUS:           emitByte(OP_SUBTRACT); break;
         case TOKEN_STAR:            emitByte(OP_MULTIPLY); break;

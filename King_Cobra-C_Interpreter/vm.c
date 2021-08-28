@@ -270,6 +270,8 @@ static InterpretResult run() {
             }
             case OP_GREATER:    BINARY_OP(BOOL_VAL, >); break;
             case OP_LESS:       BINARY_OP(BOOL_VAL, <); break;
+            case OP_GREATER_EQUAL: BINARY_OP(BOOL_VAL, >=); break;
+            case OP_LESS_EQUAL: BINARY_OP(BOOL_VAL, <=); break;
             case OP_ADD: {
                 if (IS_STRING(peek(0)) && IS_STRING(peek(1))) {
                     concatenate();
