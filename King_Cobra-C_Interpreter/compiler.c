@@ -29,6 +29,7 @@ typedef struct {
 typedef enum {
     PREC_NONE,
     PREC_ASSIGNMENT, // =
+    PREC_POSTFIX, // Think -=, +=, *=, /=
     PREC_OR, // or
     PREC_AND, // and
     PREC_EQUALITY, // == !=
@@ -85,6 +86,8 @@ typedef struct Compiler {
     int localCount;
     Upvalue upvalues[UINT8_COUNT];
     int scopeDepth;
+    uint8_t varStatusSet;
+    uint8_t varStatusGet;
 } Compiler;
 
 typedef struct ClassCompiler {
@@ -538,50 +541,21 @@ static void binary(bool canAssign) {
     ParseRule* rule = getRule(operatorType);
     parsePrecedence((Precedence)(rule->precedence + 1));
 
-    // Later will use OP_GREATER_EQUAL as well as OP_LESS_EQUAL
-    // for the OP codes of TOKEN_GREATER_EQUAL and TOKEN_LESS_EQUAL.
     switch(operatorType) {
         case TOKEN_BANG_EQUAL:      emitBytes(OP_EQUAL, OP_NOT); break;
         case TOKEN_EQUAL_EQUAL:     emitByte(OP_EQUAL); break;
-        case TOKEN_GREATER:         emitByte(OP_GREATER); break;
-        //case TOKEN_GREATER_EQUAL:   emitBytes(OP_LESS, OP_NOT); break; 
+        case TOKEN_GREATER:         emitByte(OP_GREATER); break; 
         case TOKEN_GREATER_EQUAL:   emitByte(OP_GREATER_EQUAL); break; 
         case TOKEN_LESS:            emitByte(OP_LESS); break;
-        //case TOKEN_LESS_EQUAL:      emitBytes(OP_GREATER_EQUAL, OP_NOT); break;
         case TOKEN_LESS_EQUAL:      emitByte(OP_LESS_EQUAL); break;
         case TOKEN_PLUS:            emitByte(OP_ADD); break;
         case TOKEN_MINUS:           emitByte(OP_SUBTRACT); break;
         case TOKEN_STAR:            emitByte(OP_MULTIPLY); break;
         case TOKEN_SLASH:           emitByte(OP_DIVIDE); break;
         case TOKEN_SLASH_EQUAL: {
-            /**
-             * @brief static void namedVariable(Token name, bool canAssign) {
-    uint8_t getOp, setOp;
-    int arg = resolveLocal(current, &name);
-    if (arg != -1) {
-        getOp = OP_GET_LOCAL;
-        setOp = OP_SET_LOCAL;
-    }
-    else if ((arg = resolveUpvalue(current, &name)) != -1) {
-        getOp = OP_GET_UPVALUE;
-        setOp = OP_SET_UPVALUE; 
-    }
-    else {
-        arg = identifierConstant(&name);
-        getOp = OP_GET_GLOBAL;
-        setOp = OP_SET_GLOBAL;
-    }
-
-    if (canAssign && match(TOKEN_EQUAL)) {
-        expression();
-        emitBytes(setOp, (uint8_t)arg);
-    }
-    else {
-        emitBytes(getOp, (uint8_t)arg);
-    }
-}
-             * 
-             */
+            // Need to get the variable value first, then divide it by the next value.
+            emitByte(OP_DIVIDE_EQUALS);
+            emitByte(((*current).varStatusSet));
             break;
         }
         default:
@@ -681,7 +655,6 @@ static void namedVariable(Token name, bool canAssign) {
         getOp = OP_GET_GLOBAL;
         setOp = OP_SET_GLOBAL;
     }
-
     if (canAssign && match(TOKEN_EQUAL)) {
         expression();
         emitBytes(setOp, (uint8_t)arg);
@@ -776,14 +749,14 @@ ParseRule rules[] = {
   [TOKEN_COMMA]         = {NULL,     NULL,   PREC_NONE},
   [TOKEN_DOT]           = {NULL,     dot,    PREC_CALL},
   [TOKEN_MINUS]         = {unary,    binary, PREC_TERM},
-  [TOKEN_MINUS_EQUAL]   = {NULL,     binary,   PREC_TERM},
+  [TOKEN_MINUS_EQUAL]   = {NULL,     binary, PREC_POSTFIX},
   [TOKEN_PLUS]          = {NULL,     binary, PREC_TERM},
-  [TOKEN_PLUS_EQUAL]    = {NULL,     binary,   PREC_TERM},
+  [TOKEN_PLUS_EQUAL]    = {NULL,     binary, PREC_POSTFIX},
   [TOKEN_SEMICOLON]     = {NULL,     NULL,   PREC_NONE},
   [TOKEN_SLASH]         = {NULL,     binary, PREC_FACTOR},
-  [TOKEN_SLASH_EQUAL]   = {NULL,     binary, PREC_FACTOR},
+  [TOKEN_SLASH_EQUAL]   = {NULL,     binary, PREC_POSTFIX},
   [TOKEN_STAR]          = {NULL,     binary, PREC_FACTOR},
-  [TOKEN_SLASH_EQUAL]   = {NULL,     binary, PREC_FACTOR},
+  [TOKEN_SLASH_EQUAL]   = {NULL,     binary, PREC_POSTFIX},
   [TOKEN_BANG]          = {unary,    NULL,   PREC_NONE},
   [TOKEN_BANG_EQUAL]    = {NULL,     binary, PREC_EQUALITY},
   [TOKEN_EQUAL]         = {NULL,     NULL,   PREC_NONE},
