@@ -554,8 +554,8 @@ static void binary(bool canAssign) {
         case TOKEN_SLASH:           emitByte(OP_DIVIDE); break;
         case TOKEN_SLASH_EQUAL: {
             // Need to get the variable value first, then divide it by the next value.
-            emitByte(OP_DIVIDE_EQUALS);
-            emitByte(((*current).varStatusSet));
+            emitBytes((*current).varStatusGet, OP_DIVIDE_EQUAL);
+            emitByte((*current).varStatusSet);
             break;
         }
         default:
@@ -645,19 +645,29 @@ static void namedVariable(Token name, bool canAssign) {
     if (arg != -1) {
         getOp = OP_GET_LOCAL;
         setOp = OP_SET_LOCAL;
+        (*current).varStatusGet = getOp;
+        (*current).varStatusSet = setOp;
     }
     else if ((arg = resolveUpvalue(current, &name)) != -1) {
         getOp = OP_GET_UPVALUE;
-        setOp = OP_SET_UPVALUE; 
+        setOp = OP_SET_UPVALUE;
+        (*current).varStatusGet = getOp;
+        (*current).varStatusSet = setOp; 
     }
     else {
         arg = identifierConstant(&name);
         getOp = OP_GET_GLOBAL;
         setOp = OP_SET_GLOBAL;
+        (*current).varStatusGet = getOp;
+        (*current).varStatusSet = setOp;
     }
     if (canAssign && match(TOKEN_EQUAL)) {
         expression();
         emitBytes(setOp, (uint8_t)arg);
+    }
+    else if(canAssign && match(TOKEN_SLASH_EQUAL)) {
+        expression();
+        emitBytes(setOp, OP_DIVIDE_EQUAL);
     }
     else {
         emitBytes(getOp, (uint8_t)arg);
@@ -742,10 +752,12 @@ static void unary(bool canAssign) {
  * This is basically a look-up table of ParseRules.
 */
 ParseRule rules[] = {
-  [TOKEN_LEFT_PAREN]    = {grouping, call,   PREC_CALL},
-  [TOKEN_RIGHT_PAREN]   = {NULL,     NULL,   PREC_NONE},
-  [TOKEN_LEFT_BRACE]    = {NULL,     NULL,   PREC_NONE}, 
-  [TOKEN_RIGHT_BRACE]   = {NULL,     NULL,   PREC_NONE},
+  [TOKEN_LEFT_PAREN]    = {grouping, call,   PREC_CALL}, // (
+  [TOKEN_RIGHT_PAREN]   = {NULL,     NULL,   PREC_NONE}, // )
+  [TOKEN_LEFT_BRACE]    = {NULL,     NULL,   PREC_NONE}, // {
+  [TOKEN_RIGHT_BRACE]   = {NULL,     NULL,   PREC_NONE}, // }
+  [TOKEN_LEFT_BRACKET]  = {NULL,     NULL,   PREC_NONE}, // [
+  [TOKEN_RIGHT_BRACKET] = {NULL,     NULL,   PREC_NONE}, // ]
   [TOKEN_COMMA]         = {NULL,     NULL,   PREC_NONE},
   [TOKEN_DOT]           = {NULL,     dot,    PREC_CALL},
   [TOKEN_MINUS]         = {unary,    binary, PREC_TERM},

@@ -144,6 +144,17 @@ static InterpretResult run() {
             push(valueType(a op b)); \
         } while (false)
 
+    #define POST_BINARY_OP(valueType, op) \
+        do { \
+            if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) { \
+                runtimeError("Operands must be numbers."); \
+                return INTERPRET_RUNTIME_ERROR; \
+            } \
+            double b = AS_NUMBER(pop()); \
+            double a = AS_NUMBER(pop()); \
+            push(valueType(b op a)); \
+        } while (false)
+
     for (;;) {
         /*
         #ifdef DEBUG_TRACE_EXECUTION
@@ -290,8 +301,8 @@ static InterpretResult run() {
             case OP_SUBTRACT:   BINARY_OP(NUMBER_VAL, -); break;
             case OP_MULTIPLY:   BINARY_OP(NUMBER_VAL, *); break;
             case OP_DIVIDE:     BINARY_OP(NUMBER_VAL, /); break;
-            case OP_DIVIDE_EQUALS: {
-                BINARY_OP(NUMBER_VAL, *); 
+            case OP_DIVIDE_EQUAL: {
+                POST_BINARY_OP(NUMBER_VAL, /=);
                 break;
             }
             case OP_NOT:        push(BOOL_VAL(isFalsey(pop()))); break;
@@ -417,6 +428,7 @@ static InterpretResult run() {
     #undef READ_CONSTANT
     #undef READ_STRING
     #undef BINARY_OP
+    #undef POST_BINARY_OP
 }
 
 void push(Value value) {

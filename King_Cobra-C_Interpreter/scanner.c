@@ -127,7 +127,14 @@ static TokenType identifierType() {
             }
             break;
         case 'i': return checkKeyword(1, 1, "f", TOKEN_IF);
-        case 'n': return checkKeyword(1, 3, "ull", TOKEN_NULL);
+        case 'n': 
+            if (scanner.current - scanner.start > 1) {
+                switch(scanner.start[1]) {
+                    case 'u': return checkKeyword(2, 3, "ll", TOKEN_NULL);
+                    case 'e': return checkKeyword(2, 3, "xt", TOKEN_NEXT); // This is the continue statement.
+                }
+            }
+            
         case 'o': return checkKeyword(1, 1, "r", TOKEN_OR);
         case 'p': return checkKeyword(1, 4, "rint", TOKEN_PRINT);
         case 'r': return checkKeyword(1, 5, "eturn", TOKEN_RETURN);
