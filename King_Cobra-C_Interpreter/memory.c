@@ -88,6 +88,11 @@ static void blackenObject(Obj* object) {
             markObject((Obj*)bound->method);
             break;
         }
+        case OBJ_LIST: {
+            ObjList* list = (ObjList*)object;
+            markObject((Obj*)list->name);
+            break;
+        }
         case OBJ_CLASS: {
             ObjClass* Class = (ObjClass*)object;
             markObject((Obj*)Class->name);

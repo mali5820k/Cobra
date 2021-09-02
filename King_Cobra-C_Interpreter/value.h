@@ -9,6 +9,7 @@
 */
 typedef struct Obj Obj;
 typedef struct ObjString ObjString;
+typedef struct ObjList ObjList;
 
 #ifdef NAN_BOXING
 

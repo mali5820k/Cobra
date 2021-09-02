@@ -34,6 +34,35 @@ ObjBoundMethod* newBoundMethod(Value receiver, ObjClosure* method) {
     return bound;
 }
 
+/*
+static ObjList* allocateList(Value* elements, int length) {
+    ObjList* list = ALLOCATE_OBJ(ObjList, OBJ_LIST);
+    list->valArray->values = elements;
+    list->valArray->count = length;
+    int oldCapacity = list->valArray->capacity;
+    if (oldCapacity == NULL)
+        list->valArray->capacity = 0;
+    list->valArray->capacity = GROW_CAPACITY(oldCapacity);
+    push(OBJ_VAL(list));
+    tableSet(&vm.lists, list, NULL_VAL);
+    pop();
+
+    return list;
+}
+*/
+
+
+ObjList* newList(ObjString* name) {
+    ObjList* list = ALLOCATE_OBJ(ObjList, OBJ_LIST);
+    list->name = name;
+    list->capacity = 0;
+    list->length = 0;
+    Value* empty = NULL;
+    list->elements = empty;
+    initTable(&list->elements);
+    return list;
+}
+
 ObjClass* newClass(ObjString* name) {
     ObjClass* Class = ALLOCATE_OBJ(ObjClass, OBJ_CLASS);
     Class->name = name;
@@ -143,6 +172,20 @@ void printObject(Value value) {
     switch(OBJ_TYPE(value)) {
         case OBJ_BOUND_METHOD:
             printFunction(AS_BOUND_METHOD(value)->method->function);
+            break;
+        case OBJ_LIST:
+            ObjList* obj = AS_LIST(value);
+            // Print out the name of the list:
+            printf("%s\n", obj->name->chars);
+            // Then print out the individual elements of the list:
+            if(obj->length != 0) {
+                for(int i = 0; i < obj->length; i++) {
+                    printValue(obj->elements[i]);
+                }
+            }
+            else {
+                printf("\tList is empty.");
+            }
             break;
         case OBJ_CLASS:
             printf("%s", AS_CLASS(value)->name->chars);

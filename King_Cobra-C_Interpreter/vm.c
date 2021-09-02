@@ -102,6 +102,7 @@ void initVM() {
 
     initTable(&vm.globals);
     initTable(&vm.strings);
+    initTable(&vm.lists);
 
     vm.initString = NULL;
     vm.initString = copyString("init", 4);
