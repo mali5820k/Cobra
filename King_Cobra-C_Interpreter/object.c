@@ -33,25 +33,7 @@ ObjBoundMethod* newBoundMethod(Value receiver, ObjClosure* method) {
     bound->method = method;
     return bound;
 }
-
 /*
-static ObjList* allocateList(Value* elements, int length) {
-    ObjList* list = ALLOCATE_OBJ(ObjList, OBJ_LIST);
-    list->valArray->values = elements;
-    list->valArray->count = length;
-    int oldCapacity = list->valArray->capacity;
-    if (oldCapacity == NULL)
-        list->valArray->capacity = 0;
-    list->valArray->capacity = GROW_CAPACITY(oldCapacity);
-    push(OBJ_VAL(list));
-    tableSet(&vm.lists, list, NULL_VAL);
-    pop();
-
-    return list;
-}
-*/
-
-
 ObjList* newList(ObjString* name) {
     ObjList* list = ALLOCATE_OBJ(ObjList, OBJ_LIST);
     list->name = name;
@@ -62,6 +44,7 @@ ObjList* newList(ObjString* name) {
     initTable(&list->elements);
     return list;
 }
+*/
 
 ObjClass* newClass(ObjString* name) {
     ObjClass* Class = ALLOCATE_OBJ(ObjClass, OBJ_CLASS);
@@ -94,6 +77,21 @@ static ObjString* allocateString(char* chars, int length, uint32_t hash) {
     pop();
 
     return string;
+}
+
+static ObjList* allocateList(ObjString* name, Value* elements, int length) {
+    ObjList* list = ALLOCATE_OBJ(ObjList, OBJ_LIST);
+    list->valArray->values = elements;
+    list->valArray->count = length;
+    int oldCapacity = list->valArray->capacity;
+    if (oldCapacity == NULL)
+        list->valArray->capacity = 0;
+    list->valArray->capacity = GROW_CAPACITY(oldCapacity);
+    push(OBJ_VAL(list));
+    tableSet(&vm.lists, list, NULL_VAL);
+    pop();
+
+    return list;
 }
 
 ObjFunction* newFunction() {
