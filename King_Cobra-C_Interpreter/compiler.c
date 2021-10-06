@@ -656,6 +656,11 @@ static void string(bool canAssign) {
     emitConstant(OBJ_VAL(copyString(parser.previous.start + 1, parser.previous.length - 2)));
 }
 
+static void list(bool canAssign) {
+    //emitByte(OBJ_LIST())
+    // Use allocateList() like strings do to get this to work.
+}
+
 /**
  * Calls identifierConstant() for taking a token and adding it to a Chunk's constant table as a string.
  * "Helper Function"
@@ -792,7 +797,7 @@ ParseRule rules[] = {
     [TOKEN_RIGHT_PAREN]   = {NULL,     NULL,   NULL,    PREC_NONE}, // )
     [TOKEN_LEFT_BRACE]    = {NULL,     NULL,   NULL,    PREC_NONE}, // {
     [TOKEN_RIGHT_BRACE]   = {NULL,     NULL,   NULL,    PREC_NONE}, // }
-    [TOKEN_LEFT_BRACKET]  = {NULL,     NULL,   NULL,    PREC_NONE}, // [
+    [TOKEN_LEFT_BRACKET]  = {list,     NULL,   NULL,    PREC_NONE}, // [
     [TOKEN_RIGHT_BRACKET] = {NULL,     NULL,   NULL,    PREC_NONE}, // ]
     [TOKEN_COMMA]         = {NULL,     NULL,   NULL,    PREC_NONE},
     [TOKEN_DOT]           = {NULL,     dot,    NULL,    PREC_CALL},
@@ -804,7 +809,7 @@ ParseRule rules[] = {
     [TOKEN_SLASH]         = {NULL,     binary, NULL,    PREC_FACTOR},
     [TOKEN_SLASH_EQUAL]   = {NULL,     NULL,   NULL,    PREC_NONE},
     [TOKEN_STAR]          = {NULL,     binary, NULL,    PREC_FACTOR},
-    [TOKEN_STAR_EQUAL]    = {NULL,     NULL, NULL,      PREC_NONE},
+    [TOKEN_STAR_EQUAL]    = {NULL,     NULL,   NULL,    PREC_NONE},
     [TOKEN_BANG]          = {unary,    NULL,   NULL,    PREC_NONE},
     [TOKEN_BANG_EQUAL]    = {NULL,     binary, NULL,    PREC_EQUALITY},
     [TOKEN_EQUAL]         = {NULL,     NULL,   NULL,    PREC_NONE},

@@ -106,6 +106,9 @@ void initVM() {
     vm.initString = NULL;
     vm.initString = copyString("init", 4);
     defineNative("clock", clockNative); // Add more native functions for file i/o
+    //defineNative("writeFile", writeFileNative);
+    //defineNative("readFile", readFileNative);
+    //defineNative("");
 }
 
 void freeVM() {

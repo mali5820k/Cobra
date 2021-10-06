@@ -19,7 +19,7 @@
 #define IS_INSTANCE(value)      isObjType(value, OBJ_INSTANCE)
 #define IS_NATIVE(value)        isObjType(value, OBJ_NATIVE)
 #define IS_STRING(value)        isObjType(value, OBJ_STRING)
-
+#define IS_LIST(value)          isObjType(value, OBJ_LIST)
 /**
  * The AS_STRING macro returns the pointer to that string object,
  * and the AS_CSTRING macro returns the character array of that string object.
@@ -32,6 +32,8 @@
 #define AS_NATIVE(value)        (((ObjNative*)AS_OBJ(value))->function)
 #define AS_STRING(value)        ((ObjString*)AS_OBJ(value))
 #define AS_CSTRING(value)       (((ObjString*)AS_OBJ(value)) -> chars)
+#define AS_LIST(value)          ((ObjList*)AS_OBJ(value))
+#define AS_CLIST(value)         (((ObjList*)AS_OBJ(value))->valArray->values)
 
 typedef enum {
     OBJ_BOUND_METHOD,
@@ -41,6 +43,7 @@ typedef enum {
     OBJ_INSTANCE,
     OBJ_NATIVE,
     OBJ_STRING,
+    OBJ_LIST,
     OBJ_UPVALUE
 } ObjType;
 
@@ -70,6 +73,17 @@ struct ObjString {
     int length;
     char* chars;
     uint32_t hash;
+};
+
+// To easily integrate list objects with the current hashing system,
+// add a name field to the list object struct.
+struct ObjList {
+    Obj obj;
+    ObjString* name;
+    //Table elementsByValue;
+    int length; // current number of elements in array
+    int capacity; // empty memory spots in array
+    Value* elements;
 };
 
 typedef struct ObjUpvalue {
@@ -105,6 +119,7 @@ typedef struct {
 } ObjBoundMethod;
 
 ObjBoundMethod* newBoundMethod(Value receiver, ObjClosure* method);
+ObjList* newList(ObjString* name);
 ObjClass* newClass(ObjString* name);
 ObjClosure* newClosure(ObjFunction* function);
 ObjFunction* newFunction();
