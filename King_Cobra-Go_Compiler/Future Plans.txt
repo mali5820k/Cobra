@@ -1,2 +1,0 @@
-May implement a compiler in Go for exercise purposes. The idea is to create a compiler that compiles down to machine code AOT as opposed to interpreted or JIT compilers.
-This may or may not happen as quickly as I'd like due to time constraints.
