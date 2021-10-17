@@ -1,4 +1,7 @@
 # King Cobra
+### Recent Update To Project:
+  - I will be leaving this interpreter scripting project as a learning experience. Moving forward, I will be making a new scripting language without using source code from "Crafting Interpreters" by Robert (Bob) Nystrom, his repository, or even this repository. The implementation will be a compiler written in C# to output IL to be ran on CLR as a .NET language. The project will continue to be open source but the repository for the new project will be separate, as I don't want to over-crowd this repository as it is now. The link to the new project can be found [here](https://github.com/mali5820k/Krait-Script). Lastly, the name for this new language will be Krait-Script (The '-' may or may not stay in the name, but for now I'm keeping it as is).
+
 ### Project Goals/Focus:
   - A programming language inspired from Python's simplicity and C/C++'s speed.
   - The language itself is going to be compiler-based with focus on portability via a VM (low-level Virtual Machine). The focus of this project is to implement KC entirely with the help of "Crafting Interpreters" by Robert (Bob) Nystrom, and then to implement modern features to make KC a language that I would use. ***If time becomes scarce or my motivation to work on this language changes, then I'll simply leave the project as a learning experience.*** Please check out the P.S. section for more details on licensing and potential future plans.
